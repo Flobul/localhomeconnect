@@ -1,48 +1,48 @@
 {
-  "id": "localhomeconnect",
-  "name": "Local Home Connect",
-  "pluginVersion": "0.1.0",
-  "description": {
-    "fr_FR": "Communication locale avec les appareils Bosch, Siemens et BSH compatibles Home Connect. Le plugin importe le profil chiffré de chaque appareil, le découvre sur le réseau local et génère ses commandes Jeedom sans dépendre du cloud pendant l'utilisation.",
-    "en_US": "Local communication with compatible Bosch, Siemens and BSH Home Connect appliances. The plugin imports each appliance encrypted profile, discovers it on the LAN and generates Jeedom commands without relying on the cloud during operation.",
-    "es_ES": "Comunicación local con electrodomésticos Bosch, Siemens y BSH compatibles con Home Connect. El complemento importa el perfil cifrado de cada electrodoméstico, lo descubre en la LAN y genera comandos Jeedom sin depender de la nube durante el funcionamiento.",
-    "de_DE": "Lokale Kommunikation mit kompatiblen Bosch-, Siemens- und BSH-Home-Connect-Geräten. Das Plugin importiert das verschlüsselte Profil jedes Geräts, erkennt es im LAN und generiert Jeedom-Befehle, ohne während des Betriebs auf die Cloud angewiesen zu sein.",
-    "it_IT": "Comunicazione locale con elettrodomestici Bosch, Siemens e BSH compatibili con Home Connect. Il plugin importa il profilo crittografato di ciascun elettrodomestico, lo scopre sulla LAN e genera comandi Jeedom senza fare affidamento sul cloud durante il funzionamento.",
-    "pt_PT": "Comunicação local com aparelhos Bosch, Siemens e BSH compatíveis com Home Connect. O plugin importa o perfil criptografado de cada aparelho, descobre-o na LAN e gera comandos Jeedom sem depender da nuvem durante a operação."  
-  },
-  "installation": "Installez les dépendances, enregistrez le compte SingleKey puis tentez la récupération directe. En cas de hCaptcha, le plugin guide vers l’autorisation avec navigateur. L’import ZIP reste disponible en dernier secours.",
-  "utilization": "Le démon maintient une connexion WebSocket chiffrée avec chaque appareil et crée les commandes à partir des capacités réellement annoncées en lecture et en écriture.",
-  "licence": "AGPL",
-  "author": "DomoFlo1",
-  "require": "4.4",
-  "os": {
-    "min": 12
-  },
-  "category": "devicecommunication",
-  "hasDependency": true,
-  "hasOwnDeamon": true,
-  "maxDependancyInstallTime": 30,
-  "changelog": "https://flobul-domotique.fr/liste-des-versions-du-plugin-localhomeconnect-pour-jeedom/",
-  "documentation": "https://flobul-domotique.fr/presentation-du-plugin-localhomeconnect-pour-jeedom/",
-  "link": {
-    "forum": "https://community.jeedom.com/tag/plugin-localhomeconnect"
-  },
-  "language": [
-    "fr_FR",
-    "en_US",
-    "de_DE",
-    "es_ES",
-    "it_IT",
-    "pt_PT"
-  ],
-  "compatibility": [
-    "smart",
-    "luna",
-    "atlas",
-    "rpi",
-    "docker",
-    "diy",
-    "v4",
-    "mobile"
-  ]
+	"id": "localhomeconnect",
+	"name": "Local Home Connect",
+	"pluginVersion": "0.1.0",
+	"description": {
+		"fr_FR": "Communication locale avec les appareils Bosch, Siemens et BSH compatibles Home Connect. Le plugin importe le profil chiffré de chaque appareil, le découvre sur le réseau local et génère ses commandes Jeedom sans dépendre du cloud pendant l'utilisation.",
+		"en_US": "Local communication with compatible Bosch, Siemens and BSH Home Connect appliances. The plugin imports each appliance encrypted profile, discovers it on the LAN and generates Jeedom commands without relying on the cloud during operation.",
+		"es_ES": "Comunicación local con electrodomésticos Bosch, Siemens y BSH compatibles con Home Connect. El complemento importa el perfil cifrado de cada electrodoméstico, lo descubre en la LAN y genera comandos Jeedom sin depender de la nube durante el funcionamiento.",
+		"de_DE": "Lokale Kommunikation mit kompatiblen Bosch-, Siemens- und BSH-Home-Connect-Geräten. Das Plugin importiert das verschlüsselte Profil jedes Geräts, erkennt es im LAN und generiert Jeedom-Befehle, ohne während des Betriebs auf die Cloud angewiesen zu sein.",
+		"it_IT": "Comunicazione locale con elettrodomestici Bosch, Siemens e BSH compatibili con Home Connect. Il plugin importa il profilo crittografato di ciascun elettrodomestico, lo scopre sulla LAN e genera comandi Jeedom senza fare affidamento sul cloud durante il funzionamento.",
+		"pt_PT": "Comunicação local com aparelhos Bosch, Siemens e BSH compatíveis com Home Connect. O plugin importa o perfil criptografado de cada aparelho, descobre-o na LAN e gera comandos Jeedom sem depender da nuvem durante a operação."
+	},
+	"installation": "Installez les dépendances, enregistrez le compte SingleKey puis tentez la récupération directe. En cas de hCaptcha, le plugin guide vers l’autorisation avec navigateur. L’import ZIP reste disponible en dernier secours.",
+	"utilization": "Le démon maintient une connexion WebSocket chiffrée avec chaque appareil et crée les commandes à partir des capacités réellement annoncées en lecture et en écriture.",
+	"licence": "AGPL",
+	"author": "DomoFlo1",
+	"require": "4.4",
+	"os": {
+		"min": 12
+	},
+	"category": "devicecommunication",
+	"hasDependency": true,
+	"hasOwnDeamon": true,
+	"maxDependancyInstallTime": 30,
+	"changelog": "https://flobul-domotique.fr/liste-des-versions-du-plugin-localhomeconnect-pour-jeedom/",
+	"documentation": "https://flobul-domotique.fr/presentation-du-plugin-localhomeconnect-pour-jeedom/",
+	"link": {
+		"forum": "https://community.jeedom.com/tag/plugin-localhomeconnect"
+	},
+	"language": [
+		"de_DE",
+		"en_US",
+		"es_ES",
+		"fr_FR",
+		"it_IT",
+		"pt_PT"
+	],
+	"compatibility": [
+		"smart",
+		"luna",
+		"atlas",
+		"rpi",
+		"docker",
+		"diy",
+		"v4",
+		"mobile"
+	]
 }
