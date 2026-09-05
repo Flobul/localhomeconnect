@@ -1,0 +1,8 @@
+.DS_Store
+/data/*
+!/data/.htaccess
+/resources/node/node_modules/
+/resources/dependance.lib
+/resources/install_nodejs.sh
+/tests/
+*.log

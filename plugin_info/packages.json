@@ -1,0 +1,11 @@
+{
+  "apt": {
+    "php-zip": {},
+    "php-xml": {},
+    "php-curl": {},
+    "ca-certificates": {}
+  },
+  "post-install": {
+    "script": "plugins/localhomeconnect/resources/install.sh"
+  }
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="309" height="348" viewBox="0 0 43.8 49.3"
+     role="img" aria-label="Home Connect - icône plugin Jeedom">
+  <defs>
+    <style>
+      .bg { fill: #4E4E4E; }
+      .mark { fill: #FCFCFC; }
+      .cutout { fill: #4E4E4E; }
+    </style>
+  </defs>
+
+  <!-- Gabarit Jeedom : carré arrondi dans une toile 43.8 x 49.3 -->
+  <path class="bg"
+        d="M0.2,35c0,4.7,3.8,8.5,8.5,8.5h26.4c4.7,0,8.5-3.8,8.5-8.5V8.7
+           c0-4.7-3.8-8.5-8.5-8.5H8.7C4,0.1,0.2,4,0.2,8.7V35z"/>
+
+  <!-- Pictogramme Home Connect, adapté en monochrome au style des exemples fournis -->
+  <g transform="translate(6.15 6.05) scale(0.655)">
+    <path class="mark"
+          d="M43.3021,33.4637
+             a21.5132,21.5132,0,1,0-9.8385,9.8383
+             a2.002,2.002,0,0,1,1.3173-.1693
+             L42.44,44.8242
+             A2,2,0,0,0,44.8242,42.44
+             l-1.6914-7.659
+             A2.002,2.002,0,0,1,43.3021,33.4637Z"/>
+    <path class="cutout"
+          d="M31.3917,19.3791
+             l-6.6695-5.6156
+             a1.1215,1.1215,0,0,0-1.4444,0
+             l-6.6695,5.6156
+             a1.6817,1.6817,0,0,0-.5987,1.2866
+             v10.713
+             A1.1213,1.1213,0,0,0,17.1309,32.5
+             H30.8691
+             A1.1213,1.1213,0,0,0,31.99,31.3787
+             V20.6657
+             A1.6817,1.6817,0,0,0,31.3917,19.3791Z"/>
+  </g>
+</svg>

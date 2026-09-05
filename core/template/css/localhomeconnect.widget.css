@@ -1,0 +1,201 @@
+.localhomeconnect-widget {
+  --lhc-accent: var(--al-success-color, #4f8d70);
+  --lhc-card: rgba(127, 127, 127, .09);
+  --lhc-border: rgba(127, 127, 127, .22);
+  overflow: hidden;
+}
+
+.localhomeconnect-widget.localhomeconnect-oven { --lhc-accent: #d67a35; }
+.localhomeconnect-widget.localhomeconnect-hob { --lhc-accent: #d5533d; }
+
+.localhomeconnect-widget .widget-name > .classTitreIcon {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 28px;
+  padding: 0 !important;
+  line-height: 28px !important;
+}
+.localhomeconnect-widget .widget-name > .classTitreIcon i {
+  display: inline-block;
+  font-size: 19px !important;
+  line-height: 1 !important;
+  vertical-align: middle;
+}
+.localhomeconnect-widget .widget-name > .classTitreIcon.cmd.refresh {
+  margin: unset !important; 
+}
+
+.localhomeconnect-widget .widget-name .health i { color: #45a867 !important; }
+.localhomeconnect-widget.localhomeconnect-offline .widget-name .health i { color: #d9534f !important; }
+.localhomeconnect-widget-body { height: calc(100% - 28px); overflow: auto; padding: 0 8px 8px; }
+
+.localhomeconnect-tabs {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  gap: 2px;
+  padding: 3px 0 5px;
+  background: var(--eq-bg-color, rgba(245, 245, 245, .95));
+}
+
+.localhomeconnect-tab {
+  flex: 1 1 0;
+  min-width: 72px;
+  padding: 8px 6px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 7px 7px 0 0;
+  background: rgba(127, 127, 127, .08);
+  color: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.localhomeconnect-tab.active { color: var(--lhc-accent); border-bottom-color: var(--lhc-accent); background: rgba(127, 127, 127, .16); }
+.localhomeconnect-tab i { margin-right: 5px; }
+.localhomeconnect-page { display: none; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; padding: 9px 0; }
+.localhomeconnect-page.active { display: grid; }
+
+.localhomeconnect-cooking-tabs .localhomeconnect-tab { min-width: 92px; }
+.localhomeconnect-cooking-page { align-content: start; }
+.localhomeconnect-cooking-command { min-height: 78px; }
+.localhomeconnect-cooking-page[data-page="principal"] .localhomeconnect-widget-command,
+.localhomeconnect-cooking-page[data-page="foyers"] > .localhomeconnect-widget-command { min-height: 92px; }
+
+.localhomeconnect-zone-card {
+  min-width: 0;
+  min-height: 138px;
+  padding: 10px 12px;
+  border: 1px solid var(--lhc-border);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(127, 127, 127, .05), rgba(127, 127, 127, .13));
+  box-shadow: 0 3px 9px rgba(0, 0, 0, .07);
+  transition: opacity .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.localhomeconnect-zone-card header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--lhc-border);
+}
+
+.localhomeconnect-zone-card header strong { flex: 1 1 auto; min-width: 0; font-size: 1.02em; }
+.localhomeconnect-zone-card header .localhomeconnect-live-value { color: var(--txt-color, #666); font-size: .86em; }
+.localhomeconnect-zone-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(127, 127, 127, .55);
+}
+
+.localhomeconnect-zone-power {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--txt-color, #444);
+  font-size: 1.55em;
+  font-weight: 700;
+}
+
+.localhomeconnect-zone-details { font-size: .92em; }
+.localhomeconnect-zone-program {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 24px;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+.localhomeconnect-zone-program .localhomeconnect-live-value { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.localhomeconnect-zone-metrics { display: flex; justify-content: space-around; gap: 8px; }
+.localhomeconnect-zone-metrics > span { display: inline-flex; align-items: center; gap: 5px; min-width: 0; }
+.localhomeconnect-zone-progress-label { display: flex; justify-content: space-between; margin-top: 6px; font-size: .84em; }
+.localhomeconnect-live-value.history:hover { color: var(--lhc-accent); }
+
+.localhomeconnect-zone-card.is-active {
+  border-color: var(--lhc-accent);
+  box-shadow: 0 3px 12px color-mix(in srgb, var(--lhc-accent) 24%, transparent);
+}
+.localhomeconnect-zone-card.is-active .localhomeconnect-zone-icon { background: var(--lhc-accent); }
+.localhomeconnect-zone-card.is-active .localhomeconnect-zone-icon i { animation: localhomeconnect-flame 1.7s ease-in-out infinite; }
+.localhomeconnect-zone-card.is-idle { min-height: 90px; opacity: .72; }
+.localhomeconnect-zone-card.is-idle .localhomeconnect-zone-details { display: none; }
+.localhomeconnect-zone-card.is-flex-zone.is-idle { display: none; }
+.localhomeconnect-zone-card.has-residual-heat { border-color: #e09a31; opacity: 1; }
+.localhomeconnect-zone-card.has-residual-heat .localhomeconnect-zone-icon { color: #7b4700; background: #ffc15a; }
+
+@keyframes localhomeconnect-flame {
+  0%, 100% { transform: scale(1); opacity: .85; }
+  50% { transform: scale(1.14); opacity: 1; }
+}
+
+.localhomeconnect-widget-command {
+  min-width: 0;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 9px;
+  padding: 8px;
+  border: 1px solid var(--lhc-border);
+  border-radius: 14px;
+  background: var(--lhc-card);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .06);
+  overflow-wrap: anywhere;
+}
+
+.localhomeconnect-command-icon { flex: 0 0 34px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; background: var(--lhc-accent); }
+.localhomeconnect-command-active .localhomeconnect-command-icon { background: #25a9df; box-shadow: 0 0 0 4px rgba(37, 169, 223, .15); }
+.localhomeconnect-command-content { flex: 1 1 auto; min-width: 0; text-align: center; }
+.localhomeconnect-command-content > .cmd { width: 100% !important; margin: 0 !important; }
+.localhomeconnect-widget-command.history:hover { border-color: var(--lhc-accent); }
+.localhomeconnect-command-action { min-height: 58px; }
+.localhomeconnect-progress { height: 8px; margin-top: 6px; overflow: hidden; border-radius: 8px; background: rgba(127, 127, 127, .25); }
+.localhomeconnect-progress > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #2aa7d6, var(--lhc-accent)); transition: width .3s ease; }
+.localhomeconnect-switch { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: pointer; font-weight: 600; }
+.localhomeconnect-switch input { position: absolute; opacity: 0; pointer-events: none; }
+.localhomeconnect-switch-track { flex: 0 0 46px; height: 25px; padding: 3px; border-radius: 20px; background: rgba(127, 127, 127, .4); transition: background .2s ease; }
+.localhomeconnect-switch-track i { display: block; width: 19px; height: 19px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .3); transition: transform .2s ease; }
+.localhomeconnect-switch input:checked + .localhomeconnect-switch-track { background: var(--lhc-accent); }
+.localhomeconnect-switch input:checked + .localhomeconnect-switch-track i { transform: translateX(21px); }
+
+.localhomeconnect-offline-message {
+  display: none;
+  margin: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  color: #72520b;
+  background: rgba(240, 173, 78, .2);
+  text-align: center;
+}
+
+.localhomeconnect-offline .localhomeconnect-offline-message { display: block; }
+.localhomeconnect-offline .localhomeconnect-page[data-page="principal"] .localhomeconnect-command-info { display: none; }
+.localhomeconnect-offline .localhomeconnect-zone-card { filter: grayscale(1); opacity: .55; }
+.localhomeconnect-offline .localhomeconnect-zone-card .localhomeconnect-live-value,
+.localhomeconnect-offline .localhomeconnect-zone-card .localhomeconnect-zone-details { visibility: hidden; }
+.localhomeconnect-offline .localhomeconnect-command-action { filter: grayscale(1); opacity: .42; pointer-events: none; }
+
+@media (max-width: 640px) {
+  .localhomeconnect-tabs { overflow-x: auto; }
+  .localhomeconnect-tab { flex: 0 0 auto; }
+  .localhomeconnect-tab i { margin-right: 2px; }
+  .localhomeconnect-page, .localhomeconnect-widget-mobile .localhomeconnect-page { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .localhomeconnect-zone-card { min-height: 125px; }
+}
+
+@media (max-width: 380px) {
+  .localhomeconnect-page { grid-template-columns: 1fr; }
+}

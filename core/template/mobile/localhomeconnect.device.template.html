@@ -1,0 +1,19 @@
+<link rel="stylesheet" href="plugins/localhomeconnect/core/template/css/localhomeconnect.widget.css">
+<div class="eqLogic eqLogic-widget #custom_layout# #class# localhomeconnect-widget localhomeconnect-widget-mobile localhomeconnect-#device_class##online_class#"
+     data-eqType="#eqType#" data-eqLogic_id="#id#" data-eqLogic_uid="#uid#" data-version="#version#"
+     data-translate-category="#translate_category#" data-category="#category#" data-tags="#tags#"
+     data-online="#online#" data-device-type="#device_type#" style="width:#width#;height:#height#;#style#">
+    <center class="widget-name">
+        <span class="cmd classTitreIcon health pull-left tippied" data-cmd_id="#connected_id#"
+              data-title="{{Santé}} : #online_label#" data-title-online="{{Santé : Prêt}}" data-title-offline="{{Santé : Hors ligne}}">
+            <i class="fas fa-link"></i>
+        </span>
+        <span class="cmd classTitreIcon refresh pull-right tippied cursor localhomeconnect-refresh"
+              data-cmd_id="#refresh_id#" data-title="{{Rafraîchir les informations locales}}"><i class="fas fa-sync"></i></span>
+        <span class="reportModeVisible">#name_display# <span class="object_name">#object_name#</span></span>
+        <a href="#eqLink#" class="reportModeHidden">#name_display# <span class="object_name">#object_name#</span></a>
+    </center>
+    <div class="localhomeconnect-offline-message" role="status"><i class="fas fa-unlink"></i> <span>{{Appareil hors ligne — actions indisponibles}}</span></div>
+    <div class="localhomeconnect-widget-body">#commands#</div>
+</div>
+<script src="plugins/localhomeconnect/core/template/js/localhomeconnect.widget.js"></script>

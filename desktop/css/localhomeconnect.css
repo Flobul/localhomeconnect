@@ -1,0 +1,118 @@
+#configuration_plugin_localhomeconnect .control-label,
+#div_localhomeconnect .control-label { font-size: 14px; font-weight: 400; }
+#configuration_plugin_localhomeconnect legend,
+#div_localhomeconnect legend { font-size: 16px; font-weight: 600; margin-bottom: 15px; }
+.localhomeconnect-plugin-links .btn { margin: 2px; }
+.localhomeconnect-version-card > div { margin-bottom: 5px; }
+.localhomeconnect-profile-upload { max-width: 620px; }
+.localhomeconnect-profile-methods { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0 0 18px; }
+.localhomeconnect-profile-tile,
+.localhomeconnect-installed-profiles { background: var(--form-bg-color, rgba(255, 255, 255, .75)); border: 1px solid var(--border-color, rgba(127, 127, 127, .25)); border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, .08); }
+.localhomeconnect-profile-tile { display: flex; flex-direction: column; min-height: 430px; padding: 18px; border-top-width: 4px; }
+.localhomeconnect-profile-tile-primary { border-top-color: var(--al-success-color, #5cb85c); }
+.localhomeconnect-profile-tile-browser { border-top-color: var(--al-warning-color, #f0ad4e); }
+.localhomeconnect-profile-tile-manual { border-top-color: var(--al-info-color, #5bc0de); }
+.localhomeconnect-profile-tile > header,
+.localhomeconnect-installed-profiles > header { display: flex; align-items: flex-start; gap: 12px; }
+.localhomeconnect-profile-tile header > div,
+.localhomeconnect-installed-profiles header > div { min-width: 0; flex: 1; }
+.localhomeconnect-profile-tile h3,
+.localhomeconnect-installed-profiles h3 { margin: 5px 0 4px; font-size: 18px; font-weight: 600; }
+.localhomeconnect-profile-tile header p,
+.localhomeconnect-installed-profiles header p { margin: 0; color: var(--txt-color, inherit); opacity: .75; }
+.localhomeconnect-profile-icon { display: inline-flex; flex: 0 0 44px; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; color: #fff; background: var(--al-info-color, #5bc0de); font-size: 19px; }
+.localhomeconnect-profile-tile-primary .localhomeconnect-profile-icon { background: var(--al-success-color, #5cb85c); }
+.localhomeconnect-profile-tile-browser .localhomeconnect-profile-icon { background: var(--al-warning-color, #f0ad4e); }
+.localhomeconnect-profile-steps { margin: 18px 0; padding-left: 22px; }
+.localhomeconnect-profile-steps li { margin-bottom: 8px; line-height: 1.35; }
+.localhomeconnect-tile-field { margin-bottom: 12px; }
+.localhomeconnect-tile-field > label { display: block; margin-bottom: 5px; font-weight: 600; }
+.localhomeconnect-tile-field .help-block { margin: 5px 0 0; font-size: 12px; }
+.localhomeconnect-profile-actions { margin-top: auto; padding-top: 14px; }
+.localhomeconnect-profile-actions .btn { width: 100%; white-space: normal; }
+.localhomeconnect-tile-notice { margin: 4px 0 0; font-size: 12px; }
+.localhomeconnect-profile-downloader { align-self: flex-start; margin: auto 0 12px; white-space: normal; }
+.localhomeconnect-profile-tile .localhomeconnect-profile-upload { width: 100%; max-width: none; }
+.localhomeconnect-installed-profiles { margin: 0 0 22px; padding: 16px 18px 8px; border-left: 4px solid var(--al-success-color, #5cb85c); }
+.localhomeconnect-installed-profiles > header { align-items: center; margin-bottom: 12px; }
+.localhomeconnect-installed-profiles > header h3 { margin-top: 0; }
+.localhomeconnect-installed-profiles > header .badge { margin-left: auto; min-width: 30px; padding: 6px 9px; font-size: 13px; }
+.localhomeconnect-installed-profiles .table { margin-bottom: 0; }
+.localhomeconnect-installed-profiles .table > thead > tr > th { border-bottom-width: 1px; }
+.localhomeconnect-field-modified { background-color: var(--al-warning-color, #f0ad4e) !important; color: var(--sc-lightTxt-color, #fff) !important; }
+.localhomeconnect-modification-message { margin: 8px; }
+.localhomeconnect-value { display: inline-block; min-height: 30px; padding: 6px 0; overflow-wrap: anywhere; }
+.localhomeconnect-daemon-summary { display: flex; align-items: center; gap: 8px 22px; flex-wrap: wrap; }
+.localhomeconnect-daemon-summary > span { white-space: nowrap; }
+.localhomeconnect-search { margin: 5px; }
+#div_localhomeconnect .localhomeconnect-equipment-card { position: relative; min-height: 190px; padding: 14px 10px 10px; overflow: hidden; border-radius: 9px; }
+#div_localhomeconnect .localhomeconnect-card-logo { display: block; width: auto; min-width: 72px; max-width: 112px; height: 88px; margin: 0 auto 5px; object-fit: contain; transition: transform .2s ease; }
+#div_localhomeconnect .localhomeconnect-equipment-card:hover .localhomeconnect-card-logo { transform: scale(1.04); }
+#div_localhomeconnect .localhomeconnect-card-status { position: absolute; z-index: 2; top: 9px; right: 10px; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; color: #fff; box-shadow: 0 1px 5px rgba(0, 0, 0, .25); }
+#div_localhomeconnect .localhomeconnect-card-status.is-online { background: var(--al-success-color, #5cb85c); }
+#div_localhomeconnect .localhomeconnect-card-status.is-offline { background: var(--al-danger-color, #d9534f); }
+#div_localhomeconnect .localhomeconnect-card-status.is-disabled { background: var(--btn-default-color, #777); }
+#div_localhomeconnect .localhomeconnect-equipment-card > .name { display: block; min-height: 20px; font-weight: 600; line-height: 1.2; }
+#div_localhomeconnect .localhomeconnect-card-object { display: block; min-height: 17px; margin-top: 2px; font-size: 11px; opacity: .7; }
+#div_localhomeconnect .localhomeconnect-card-details { display: flex; align-items: center; justify-content: center; gap: 4px 7px; flex-wrap: wrap; font-size: 10px; line-height: 1.2; }
+#div_localhomeconnect .localhomeconnect-card-details small { display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .8; }
+#div_localhomeconnect .localhomeconnect-table-details { align-items: center; gap: 7px; }
+#div_localhomeconnect .localhomeconnect-equipment-card.displayAsTable .localhomeconnect-card-status,
+#div_localhomeconnect .localhomeconnect-equipment-card.displayAsTable .localhomeconnect-card-object,
+#div_localhomeconnect .localhomeconnect-equipment-card.displayAsTable .localhomeconnect-card-details { display: none; }
+#div_localhomeconnect .localhomeconnect-equipment-card.displayAsTable .localhomeconnect-card-logo { left: 0 !important; width: 28px; min-width: 28px; height: 28px; margin: 0; }
+#div_localhomeconnect .localhomeconnect-equipment-card.displayAsTable .localhomeconnect-table-details { display: inline-flex !important; }
+#table_cmd td { vertical-align: middle; }
+.localhomeconnect-command-editor { padding: 6px 10px 18px; }
+.localhomeconnect-command-toolbar { display: flex; justify-content: flex-end; gap: 8px; margin: 0 0 12px; }
+.localhomeconnect-command-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.localhomeconnect-command-panel { margin-bottom: 14px; padding: 15px 16px 8px; border: 1px solid var(--border-color, rgba(127, 127, 127, .28)); border-radius: 8px; background: var(--eq-bg-color, rgba(255, 255, 255, .72)); box-shadow: 0 2px 7px rgba(0, 0, 0, .07); }
+.localhomeconnect-command-panel > header { display: flex; align-items: flex-start; gap: 11px; margin: -2px 0 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color, rgba(127, 127, 127, .2)); }
+.localhomeconnect-command-panel > header > i { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 36px; width: 36px; height: 36px; border-radius: 50%; color: #fff; background: var(--al-info-color, #5bc0de); }
+.localhomeconnect-command-panel > header h3 { margin: 0 0 3px; font-size: 16px; font-weight: 600; }
+.localhomeconnect-command-panel > header p { margin: 0; font-size: 12px; opacity: .72; }
+.localhomeconnect-command-panel .form-group { margin-bottom: 11px; }
+.localhomeconnect-command-type { display: inline-block; margin-top: 7px; font-size: 12px; text-transform: uppercase; }
+.localhomeconnect-command-inline-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+.localhomeconnect-command-inline-fields > label { margin: 0; font-weight: 600; }
+.localhomeconnect-command-inline-fields > label > .form-control { margin-top: 5px; font-weight: 400; }
+.localhomeconnect-command-checkbox { display: flex; align-items: center; gap: 7px; padding-top: 27px; }
+.localhomeconnect-command-type-notice { margin: 0 0 13px; }
+.localhomeconnect-command-state-table input { min-width: 120px; }
+.localhomeconnect-command-xml { border-left: 4px solid var(--al-info-color, #5bc0de); }
+.localhomeconnect-xml-paths { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.localhomeconnect-xml-paths code { overflow-wrap: anywhere; }
+.localhomeconnect-xml-summary { display: grid; grid-template-columns: 100px 130px minmax(220px, 1fr) 120px; gap: 9px; margin-bottom: 13px; }
+.localhomeconnect-xml-summary > span { min-width: 0; padding: 9px 10px; border-radius: 6px; background: var(--div_background-color, rgba(127, 127, 127, .09)); }
+.localhomeconnect-xml-summary small, .localhomeconnect-xml-summary strong { display: block; }
+.localhomeconnect-xml-summary small { margin-bottom: 3px; opacity: .68; }
+.localhomeconnect-xml-summary strong { overflow-wrap: anywhere; }
+.localhomeconnect-command-json { margin-top: 2px; padding: 10px 12px; border-radius: 6px; background: var(--form-bg-color, rgba(127, 127, 127, .08)); }
+.localhomeconnect-command-json summary { cursor: pointer; font-weight: 600; }
+.localhomeconnect-command-json pre { max-height: 260px; margin: 10px 0 0; overflow: auto; white-space: pre-wrap; }
+.localhomeconnect-authorization { padding: 10px; }
+.localhomeconnect-authorization-step { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--div_background-color, #ddd); }
+.localhomeconnect-authorization-step h4 { margin: 0 0 8px; font-weight: 600; }
+.localhomeconnect-authorization-step p { margin-bottom: 10px; }
+.localhomeconnect-authorization-number { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: var(--al-info-color, #5bc0de); color: #fff; font-weight: 700; font-size: 17px; }
+.localhomeconnect-authorization textarea { margin-bottom: 10px; font-family: monospace; overflow-wrap: anywhere; }
+.localhomeconnect-authorization-help { margin: 10px 0 12px; padding: 10px 12px; border-radius: 5px; background: var(--form-bg-color, rgba(0, 0, 0, .04)); }
+.localhomeconnect-authorization-help summary { cursor: pointer; font-weight: 600; }
+.localhomeconnect-authorization-help ol { margin: 10px 0 8px 20px; padding: 0; }
+.localhomeconnect-authorization-help li { margin-bottom: 6px; }
+.localhomeconnect-authorization-expiry { margin-top: 15px; margin-bottom: 0; }
+@media (max-width: 600px) {
+  .localhomeconnect-profile-methods { grid-template-columns: 1fr; }
+  .localhomeconnect-profile-tile { min-height: 0; }
+  .localhomeconnect-installed-profiles { padding-left: 12px; padding-right: 12px; }
+  .localhomeconnect-authorization-step { grid-template-columns: 34px minmax(0, 1fr); }
+  .localhomeconnect-authorization-number { width: 30px; height: 30px; font-size: 14px; }
+  .localhomeconnect-command-grid, .localhomeconnect-command-inline-fields, .localhomeconnect-xml-summary { grid-template-columns: 1fr; }
+  .localhomeconnect-command-toolbar { align-items: stretch; flex-direction: column-reverse; }
+  .localhomeconnect-command-toolbar .btn { width: 100%; }
+}
+@media (min-width: 601px) and (max-width: 1100px) {
+  .localhomeconnect-profile-methods { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .localhomeconnect-profile-tile-manual { grid-column: 1 / -1; min-height: 0; }
+  .localhomeconnect-xml-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

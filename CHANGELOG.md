@@ -1,0 +1,81 @@
+# Changelog
+
+## 0.1.0
+
+- Réparation automatique du stockage privé à l’installation, à la mise à jour et lors de son utilisation : protection HTTP recréée si nécessaire, répertoires en 0700 et fichiers en 0600, avec signalement dans Santé des corrections impossibles.
+- Première version du plugin LocalHomeConnect.
+- Import sécurisé des profils Home Connect au format ZIP.
+- Récupération directe Home Connect/SingleKey tentée en priorité avec OAuth PKCE.
+- Bascule guidée vers l’autorisation dans le navigateur lorsque SingleKey exige hCaptcha ou une validation interactive.
+- Exécution de JavaScript, hCaptcha et des validations interactives directement par le navigateur dans un nouvel onglet de secours.
+- Prise en compte de la page SingleKey intermédiaire « Redirection… » et reprise côté Jeedom de l’URL Home Connect `redirect_target` lorsque la politique CSP du navigateur la bloque.
+- Préparation de la session Home Connect et conservation temporaire de ses cookies côté Jeedom afin d’ouvrir directement SingleKey et d’éviter un double parcours de connexion.
+- Procédure précisée pour la page SingleKey « Redirection… » : ouverture préalable de la Console et clic manuel sur CONTINUER, le compte à rebours automatique ne produisant pas la requête exploitable.
+- Page de configuration réorganisée en tuiles pour la récupération automatique, la connexion avec navigateur, l’import Home Connect Profile Downloader et les profils installés.
+- Champ SingleKey masqué avec le composant `inputPassword` du core Jeedom et suppression de l’état du démon redondant sur cette page.
+- Vérificateur PKCE conservé uniquement côté Jeedom, session limitée à 15 minutes, état OAuth contrôlé et finalisation à usage unique.
+- Mot de passe SingleKey chiffré par le core Jeedom, jamais transmis au démon ni écrit dans les logs.
+- Récupération automatique de l’inventaire, des clés TLS/AES et des ZIP IDDF après autorisation.
+- Import ZIP manuel conservé comme solution de secours.
+- Connexions locales WebSocket AES-CBC/HMAC et TLS-PSK.
+- Découverte mDNS `_homeconnect._tcp.local` et adresse manuelle de secours.
+- Génération dynamique des commandes depuis les descriptions réellement annoncées.
+- Dictionnaire complet du plugin HomeConnect réutilisé pour traduire les fonctions, programmes et valeurs locales, avec compléments pour les fonctions IDDF récentes.
+- Types et unités complétés sans écraser les métadonnées de l'appareil : booléens en commandes on/off, durées bornées en sliders et état `Power` sans unité électrique erronée.
+- Types booléens déterminés depuis les références `refCID/refDID` du profil, y compris l’éclairage de cavité, la sécurité enfants et les sons des touches.
+- Unités du four corrigées : niveaux de luminosité 0–2 sans `%`, durées de ventilation et de signal traitées comme des listes sans `s`, unités réservées aux seules informations numériques.
+- Envoi des actions fondé sur la connexion vivante du démon afin qu’un ancien état Jeedom « hors ligne » ne bloque plus un appareil réellement joignable.
+- Événements de cuisson à trois états conservés en information textuelle et libellés « Programme interrompu/terminé » traduits.
+- Bouton « Modification de la commande » avec édition structurée des UID, fonction, catégorie, type de valeur, unité, bornes, listes et paramètres d’action.
+- Définition originale affichée en lecture seule depuis `DeviceDescription.xml` et `FeatureMapping.xml`, avec possibilité de conserver une surcharge manuelle ou de revenir au profil installé.
+- Libellés d’action explicites sans UID hexadécimal visible et anciennes racines numériques de programme conservées uniquement comme informations techniques masquées.
+- Lecture des états, réglages, options, événements et programmes.
+- Écriture prudente des valeurs `READWRITE` et démarrage des programmes sélectionnés.
+- Page Santé, test de communication et widgets dashboard/mobile.
+- Cartes équipements enrichies avec illustration par famille, état en ligne, objet, type, modèle, adresse et affichage tableau du core Jeedom.
+- Widget synthétique par pages, bascule core/personnalisé, actions marche/arrêt et historiques numériques cliquables.
+- Dépendances WebSocket et XML épinglées sur des versions sans vulnérabilité connue lors de la publication.
+- Installation de Node.js confiée à `NebzHB/dependance.lib`, sans installation concurrente de `nodejs` ou `npm` par `packages.json`.
+- Fuite mémoire du transport corrigée : la file d’amorçage WebSocket ne conserve plus les trames déjà remises au protocole.
+- Notifications de valeurs séparées des instantanés de structure afin d’éviter la sauvegarde de toutes les commandes Jeedom à chaque trame.
+- Synchronisation stabilisée sur les droits du XML installé : un instantané contextuel ne peut plus rendre une action obsolète lorsque le programme ou l’état de l’appareil change.
+- État connecté normalisé comme prêt dès que la session locale chiffrée et authentifiée est ouverte ; seules les actions d’un appareil réellement hors ligne sont désactivées.
+- Page Santé enrichie avec transport réellement utilisé, version Node.js, mémoire du démon, durée de fonctionnement, reconnexions et compteurs de capacités.
+- Journaux du démon alignés sur le format Jeedom et sur le fuseau horaire configuré dans PHP (`[AAAA-MM-JJ HH:mm:ss][NIVEAU]`), sans millisecondes ni suffixe UTC ; une copie Node obsolète est désormais signalée explicitement.
+- Niveau des journaux Node aligné sur celui du plugin Jeedom et actualisé à chaud après sauvegarde, sans redémarrage manuel du démon.
+- Profil des tables de cuisson pris en charge : commandes distinguées par foyer, traductions des réglages et états, temps en secondes, minuteur automatique en minutes, dimensions en centimètres et signal Wi-Fi en dBm.
+- Contraintes XML fiabilisées : les références d’options propres aux programmes complètent désormais leur définition sans écraser les métadonnées canoniques du profil.
+- Identifiants de programmes limités à leurs véritables fonctions afin qu’une durée ou une puissance numérique ne soit plus interprétée comme un UID Home Connect.
+- Widgets métier dédiés au four et à la table de cuisson : vue de cuisson synthétique, commandes réparties par usage et cartes regroupées par foyer sans données techniques superflues.
+- Zones flexibles masquées lorsqu’elles sont inactives, chaleur résiduelle signalée visuellement et ventilation intégrée isolée dans une page dédiée.
+- Faux états hors ligne ou dégradés corrigés : la session chiffrée et authentifiée est désormais la source de vérité, les ressources `/ro/*` absentes restant facultatives selon l’appareil.
+- Redémarrage automatique du démon avant une actualisation, un test, une découverte ou une action, avec une seule nouvelle tentative s’il s’interrompt pendant la requête.
+- Icônes Santé et Actualiser du bandeau Jeedom alignées et dimensionnées de manière identique.
+- Sélecteur de programme, température et minuteur du four réunis dans la page « Cuisson ».
+- Collision de nom avec un équipement du même objet Jeedom traitée par un renommage explicite au lieu d’une erreur MySQL.
+- Changement d'adresse DHCP pris en charge : une perte de connexion déclenche une redécouverte mDNS mutualisée, la nouvelle IP est appliquée au démon puis enregistrée dans l'équipement Jeedom.
+- Cycle de vie du démon fiabilisé : PID privé écrit atomiquement, arrêt limité au processus exact de cette installation, erreurs fatales nettoyées proprement et occupation du port détectée sans laisser de faux démon actif.
+- Nouvelle adresse mDNS authentifiée avec les clés de l'appareil avant toute bascule ; l'ancienne adresse est restaurée si la connexion durable échoue.
+- Démarrage des sessions appareils immédiat et indépendant de la durée de découverte réseau, surveillance fondée sur un service réellement annoncé et erreurs initiales non facultatives désormais remontées.
+- File des callbacks Jeedom bornée, regroupement des valeurs successives et nouvelles tentatives temporisées afin d'éviter une croissance mémoire lors d'une indisponibilité du core.
+- Persistance des commandes optimisée : aucune écriture SQL lorsque le schéma n'a pas changé et index des noms construit une seule fois par synchronisation.
+- Gestion explicite des commandes obsolètes : conservation pour les scénarios, masquage uniquement si l'UID disparaît du profil complet ou perd son droit d'écriture, puis restauration automatique s'il revient.
+- Identifiants de commandes stabilisés par UID avec migration des anciennes commandes générées, ce qui évite les doublons lors d'une redécouverte.
+- Limite de 1 500 entités désormais signalée avec le nombre exact de capacités ignorées.
+- Valeurs de protocole converties selon le type XML ; les chaînes significatives telles que `001` ne sont plus transformées arbitrairement en nombres.
+- Commandes Home Connect sans valeur fixe déclarée exposées comme saisie explicite au lieu d'envoyer systématiquement le booléen `true`.
+- Dictionnaire de capacités assaini : doublons supprimés, espaces de noms et types d'action corrigés, traductions incohérentes rectifiées et type `Cooktop` ajouté.
+- Commandes internes redondantes retirées au profit de l'état `lastCommunication` et des mécanismes natifs de Jeedom ; les anciennes commandes restent masquées pour préserver la compatibilité.
+- Profils installés atomiquement avec verrou, validation renforcée des ZIP/XML, restauration après interruption et suppression protégée depuis la configuration.
+- Secrets renforcés : mot de passe SingleKey, jeton local et session OAuth temporaire chiffrés par Jeedom ; les clés appareils ne sont plus dupliquées dans `daemon-config.json`.
+- Rafraîchissements fiabilisés : l’état d’initialisation est toujours libéré après une erreur et les délais PHP/Node sont cohérents avec un parcours local complet.
+- Erreurs WebSocket précoces confinées à la session de l’appareil afin qu’une trame invalide ne puisse plus arrêter tout le démon.
+- Opérations d’un même appareil sérialisées : découverte DHCP, rafraîchissement, surveillance et actions ne se chevauchent plus.
+- Actions validées côté Jeedom et côté démon selon leur type XML, leur liste, leurs bornes et leur pas ; les fonctions inconnues sont masquées jusqu’à leur activation explicite par l’administrateur.
+- Écritures et programmes relus après acquittement au lieu de modifier optimistement leur état dans Jeedom.
+- Callbacks Jeedom réessayés pendant une durée bornée, vidés à l’arrêt et suivis d’un instantané complet après le retour du core.
+- Profils privés protégés par un verrou global, versionnés et migrés atomiquement ; un profil invalide est isolé sans empêcher les autres appareils de fonctionner.
+- Parcours OAuth navigateur sérialisé par session, cache conservé lors d’une panne transitoire et durée globale des échanges HTTP bornée.
+- Découverte mDNS optimisée et limitée en concurrence, avec priorité à IPv4 puis aux adresses IPv6 globales.
+- Page Santé complétée par un contrôle des permissions du stockage privé et refus d’authentification du callback sans journaliser de secret.
+- Liste des langues annoncées alignée sur les traductions réellement fournies et description italienne corrigée.
