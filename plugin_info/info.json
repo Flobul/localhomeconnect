@@ -1,6 +1,6 @@
 {
   "id": "localhomeconnect",
-  "name": "LocalHomeConnect",
+  "name": "Local Home Connect",
   "pluginVersion": "0.1.0",
   "description": {
     "fr_FR": "Communication locale avec les appareils Bosch, Siemens et BSH compatibles Home Connect. Le plugin importe le profil chiffré de chaque appareil, le découvre sur le réseau local et génère ses commandes Jeedom sans dépendre du cloud pendant l'utilisation.",
@@ -23,13 +23,17 @@
   "hasOwnDeamon": true,
   "maxDependancyInstallTime": 30,
   "changelog": "https://flobul-domotique.fr/liste-des-versions-du-plugin-localhomeconnect-pour-jeedom/",
-  "documentation": "https://flobul-domotique.fr/presentation-et-documentation-du-plugin-localhomeconnect-pour-jeedom/",
+  "documentation": "https://flobul-domotique.fr/presentation-du-plugin-localhomeconnect-pour-jeedom/",
   "link": {
     "forum": "https://community.jeedom.com/tag/plugin-localhomeconnect"
   },
   "language": [
     "fr_FR",
-    "en_US"
+    "en_US",
+    "de_DE",
+    "es_ES",
+    "it_IT",
+    "pt_PT"
   ],
   "compatibility": [
     "smart",

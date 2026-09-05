@@ -2,7 +2,6 @@
 
 ## 0.1.0
 
-- Réparation automatique du stockage privé à l’installation, à la mise à jour et lors de son utilisation : protection HTTP recréée si nécessaire, répertoires en 0700 et fichiers en 0600, avec signalement dans Santé des corrections impossibles.
 - Première version du plugin LocalHomeConnect.
 - Import sécurisé des profils Home Connect au format ZIP.
 - Récupération directe Home Connect/SingleKey tentée en priorité avec OAuth PKCE.
@@ -12,6 +11,8 @@
 - Préparation de la session Home Connect et conservation temporaire de ses cookies côté Jeedom afin d’ouvrir directement SingleKey et d’éviter un double parcours de connexion.
 - Procédure précisée pour la page SingleKey « Redirection… » : ouverture préalable de la Console et clic manuel sur CONTINUER, le compte à rebours automatique ne produisant pas la requête exploitable.
 - Page de configuration réorganisée en tuiles pour la récupération automatique, la connexion avec navigateur, l’import Home Connect Profile Downloader et les profils installés.
+- Présentation des pages Configuration et Santé harmonisée avec le plugin Beem : bandeaux bleus, cartes, boutons et mise en page adaptée aux petits écrans.
+- Réglages de configuration regroupés dans les cartes « Communication locale » et « Diagnostic et sécurité », avec conservation des méthodes de récupération et d’import des profils.
 - Champ SingleKey masqué avec le composant `inputPassword` du core Jeedom et suppression de l’état du démon redondant sur cette page.
 - Vérificateur PKCE conservé uniquement côté Jeedom, session limitée à 15 minutes, état OAuth contrôlé et finalisation à usage unique.
 - Mot de passe SingleKey chiffré par le core Jeedom, jamais transmis au démon ni écrit dans les logs.
@@ -41,6 +42,9 @@
 - Synchronisation stabilisée sur les droits du XML installé : un instantané contextuel ne peut plus rendre une action obsolète lorsque le programme ou l’état de l’appareil change.
 - État connecté normalisé comme prêt dès que la session locale chiffrée et authentifiée est ouverte ; seules les actions d’un appareil réellement hors ligne sont désactivées.
 - Page Santé enrichie avec transport réellement utilisé, version Node.js, mémoire du démon, durée de fonctionnement, reconnexions et compteurs de capacités.
+- Page Santé organisée en onglets « Équipements » et « Contrôles du plugin », avec compteurs de synthèse, recherche, tri des équipements et navigation au clavier.
+- Informations des équipements regroupées en quatre colonnes dans Santé : appareil, état, connexion locale et activité, avec accès au test de communication.
+- Compteurs de connexion de Santé alignés sur l’état remonté par le démon et utilisé dans le tableau des équipements.
 - Journaux du démon alignés sur le format Jeedom et sur le fuseau horaire configuré dans PHP (`[AAAA-MM-JJ HH:mm:ss][NIVEAU]`), sans millisecondes ni suffixe UTC ; une copie Node obsolète est désormais signalée explicitement.
 - Niveau des journaux Node aligné sur celui du plugin Jeedom et actualisé à chaud après sauvegarde, sans redémarrage manuel du démon.
 - Profil des tables de cuisson pris en charge : commandes distinguées par foyer, traductions des réglages et états, temps en secondes, minuteur automatique en minutes, dimensions en centimètres et signal Wi-Fi en dBm.
@@ -78,4 +82,6 @@
 - Parcours OAuth navigateur sérialisé par session, cache conservé lors d’une panne transitoire et durée globale des échanges HTTP bornée.
 - Découverte mDNS optimisée et limitée en concurrence, avec priorité à IPv4 puis aux adresses IPv6 globales.
 - Page Santé complétée par un contrôle des permissions du stockage privé et refus d’authentification du callback sans journaliser de secret.
+- Réparation automatique du stockage privé à l’installation, à la mise à jour et lors de son utilisation, y compris depuis Santé : protection HTTP `.htaccess` recréée si nécessaire, répertoires en `0700` et fichiers en `0600`.
+- Réparation du stockage sans modification des données privées ni suivi des liens symboliques ; les corrections impossibles restent signalées dans Santé et les journaux du plugin.
 - Liste des langues annoncées alignée sur les traductions réellement fournies et description italienne corrigée.
