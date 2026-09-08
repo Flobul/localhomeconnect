@@ -1,8 +1,10 @@
 # Changelog
 
-## 0.1.0
+## 0.1.1
 
 - Collision de noms de commandes corrigée sur les fours exposant des états par cavité, notamment le Siemens HR776G3B1 : suffixes « Cavité 1 » et « Cavité 1 (serveur) » pour distinguer les programmes, éclairages et événements et permettre la création des commandes de programme globales.
+
+## 0.1.0
 - Première version du plugin LocalHomeConnect.
 - Import sécurisé des profils Home Connect au format ZIP.
 - Récupération directe Home Connect/SingleKey tentée en priorité avec OAuth PKCE.
