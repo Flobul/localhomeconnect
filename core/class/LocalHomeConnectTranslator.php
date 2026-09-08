@@ -40,12 +40,12 @@ final class LocalHomeConnectTranslator
         if (strpos($feature, '.Program.') !== false) {
             return self::program($feature);
         }
-        $zone = self::hobZoneLabel($feature);
+        $zone = self::applianceZoneLabel($feature);
         if ($zone !== '' && preg_match('/Cooking\.Hob\.StatusList\.Zone\.\d+$/i', (string) $feature)) {
             return self::appendZoneLabel(__('Informations du foyer', __FILE__), $zone);
         }
         if (preg_match('/\.Setting\.Light\.Cavity\.\d+\.Power$/i', (string) $feature)) {
-            return __('Éclairage de la cavité', __FILE__);
+            return self::appendZoneLabel(__('Éclairage de la cavité', __FILE__), $zone);
         }
         $short = self::shortName($feature);
         $labels = self::fallbackLabels();
@@ -284,7 +284,7 @@ final class LocalHomeConnectTranslator
     }
 
     /**
-     * Retourne le libellé humain d'une zone de table de cuisson.
+     * Retourne le libellé humain d'une cavité de four ou d'une zone de cuisson.
      *
      * Les zones 120 et 340 représentent les surfaces combinées gauche et
      * droite du profil Home Connect, les quatre autres sont les foyers.
@@ -292,8 +292,16 @@ final class LocalHomeConnectTranslator
      * @param string $feature Fonction Home Connect.
      * @return string
      */
-    private static function hobZoneLabel($feature)
+    private static function applianceZoneLabel($feature)
     {
+        // Les états serveur doivent rester distincts des états de la même
+        // cavité et des commandes synthétiques de programme de l'équipement.
+        if (preg_match('/^Cooking\.Oven\.(?:[^.]+\.)*Server\.Cavity\.(\d+)(?:\.|$)/i', (string) $feature, $matches)) {
+            return sprintf(__('Cavité %d (serveur)', __FILE__), (int) $matches[1]);
+        }
+        if (preg_match('/^Cooking\.Oven\.(?:[^.]+\.)*Cavity\.(\d+)(?:\.|$)/i', (string) $feature, $matches)) {
+            return sprintf(__('Cavité %d', __FILE__), (int) $matches[1]);
+        }
         if (!preg_match('/Cooking\.Hob\.(?:Status|StatusList)\.Zone\.(\d+)/i', (string) $feature, $matches)) {
             return '';
         }
@@ -309,7 +317,7 @@ final class LocalHomeConnectTranslator
     }
 
     /**
-     * Ajoute la position du foyer à un libellé sans exposer son UID.
+     * Ajoute le foyer ou la cavité à un libellé sans exposer son UID.
      *
      * @param string $label Libellé de la fonction.
      * @param string $zone Zone traduite.
