@@ -19,7 +19,7 @@ require_once __DIR__ . '/LocalHomeConnectStorage.php';
  */
 class localhomeconnect extends eqLogic
 {
-    public static $_pluginVersion = '0.1.1';
+    public static $_pluginVersion = '0.1.2';
     public static $_widgetPossibility = array('custom' => true, 'custom::layout' => true);
     public static $_encryptConfigKey = array('homeconnect_password', 'daemon_token');
 
@@ -673,6 +673,36 @@ class localhomeconnect extends eqLogic
         $enabled = array_filter(self::byType(__CLASS__), function ($eqLogic) {
             return $eqLogic->getIsEnable() && trim((string) $eqLogic->getConfiguration('profile_id', '')) !== '';
         });
+        if (count($enabled) === 0) {
+            $profiles = self::profiles();
+            if (count($profiles) > 0) {
+                foreach ($profiles as $profile) {
+                    if (!isset($profile['haId'], $profile['profileId'])) {
+                        continue;
+                    }
+                    $haId = trim((string) $profile['haId']);
+                    if ($haId === '') {
+                        continue;
+                    }
+                    $existing = self::byHaId($haId);
+                    if (is_object($existing) && trim((string) $existing->getConfiguration('profile_id', '')) !== '') {
+                        if (!$existing->getIsEnable()) {
+                            $existing->setIsEnable(1);
+                            $existing->save();
+                        }
+                        continue;
+                    }
+                    try {
+                        self::registerProfile($profile);
+                    } catch (Throwable $exception) {
+                        log::add(__CLASS__, 'warning', __('Réconciliation automatique du profil impossible pour', __FILE__) . ' ' . $haId . ' : ' . $exception->getMessage());
+                    }
+                }
+                $enabled = array_filter(self::byType(__CLASS__), function ($eqLogic) {
+                    return $eqLogic->getIsEnable() && trim((string) $eqLogic->getConfiguration('profile_id', '')) !== '';
+                });
+            }
+        }
         if (count($enabled) === 0) {
             $return['launchable'] = 'nok';
             $return['launchable_message'] = __('Importez au moins un profil Home Connect', __FILE__);
