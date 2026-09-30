@@ -1533,7 +1533,12 @@ class localhomeconnect extends eqLogic
         $restored = 0;
         foreach ((array) $eqLogic->getCmd('info') as $information) {
             $informationUid = (int) $information->getConfiguration('uid', 0);
-            if ($informationUid > 0 && strpos((string) $information->getLogicalId(), 'info_uid_') === 0) {
+            if ($informationUid <= 0) {
+                continue;
+            }
+            $logicalId = (string) $information->getLogicalId();
+            $canonical = strpos($logicalId, 'info_uid_') === 0;
+            if (!isset($preferredInfoByUid[$informationUid]) || $canonical) {
                 $preferredInfoByUid[$informationUid] = (int) $information->getId();
             }
         }
@@ -1643,17 +1648,27 @@ class localhomeconnect extends eqLogic
      * Construit une fois l'index des noms de commandes d'un équipement.
      *
      * @param localhomeconnect $eqLogic Équipement.
-     * @return array<string,bool>
+     * @return array<string,string> Nom vers identité stable de commande.
      */
     private static function commandNameIndex($eqLogic)
     {
         $index = array();
         foreach ((array) $eqLogic->getCmd() as $command) {
-            if (is_object($command)) {
-                $index[(string) $command->getName()] = true;
+            if (is_object($command) && trim((string) $command->getName()) !== '') {
+                $index[(string) $command->getName()] = self::commandIdentity($command);
             }
         }
         return $index;
+    }
+
+    /** @return string */
+    private static function commandIdentity($command)
+    {
+        $logicalId = (string) $command->getLogicalId();
+        if ($logicalId !== '') {
+            return 'logical:' . (string) $command->getType() . ':' . $logicalId;
+        }
+        return 'id:' . (int) $command->getId();
     }
 
     /**
@@ -1664,7 +1679,7 @@ class localhomeconnect extends eqLogic
      * @param array<string,mixed> $entity Entité.
      * @param array<string,string> $states Énumération.
      * @param array<string,int>|null $binary Correspondance binaire.
-     * @param array<string,bool> $nameIndex Index partagé des noms de commandes.
+     * @param array<string,string> $nameIndex Index partagé des noms de commandes.
      * @return string[] Logical IDs créés.
      */
     private static function syncEntityActions($eqLogic, $info, $entity, $states, $binary, &$nameIndex)
@@ -1765,7 +1780,7 @@ class localhomeconnect extends eqLogic
      * @param int $uid UID Home Connect.
      * @param mixed $fixedValue Valeur fixe éventuelle.
      * @param localhomeconnectCmd $info Information associée.
-     * @param array<string,bool> $nameIndex Index partagé des noms de commandes.
+     * @param array<string,string> $nameIndex Index partagé des noms de commandes.
      * @param string $protocolType Type déclaré dans le profil XML.
      * @param bool $requiresOptIn Indique une écriture XML inconnue à activer manuellement.
      * @return localhomeconnectCmd
@@ -1786,9 +1801,9 @@ class localhomeconnect extends eqLogic
             }
             return $command;
         }
-        $command->setName(self::uniqueCommandName($nameIndex, $command, $name, $uid));
         $command->setType('action');
         $command->setSubType($subType);
+        $command->setName(self::uniqueCommandName($nameIndex, $command, $name, $uid));
         $command->setIsVisible($requiresOptIn ? 0 : 1);
         $command->setConfiguration('operation', 'write');
         $command->setConfiguration('uid', $uid);
@@ -1809,7 +1824,7 @@ class localhomeconnect extends eqLogic
     /**
      * Évite la collision Jeedom lorsque deux UIDs ont le même libellé.
      *
-     * @param localhomeconnect $eqLogic Équipement.
+     * @param array<string,string> $nameIndex Index partagé des noms de commandes.
      * @param localhomeconnectCmd $command Commande en cours.
      * @param string $name Nom proposé.
      * @param int $uid UID Home Connect.
@@ -1817,21 +1832,20 @@ class localhomeconnect extends eqLogic
      */
     private static function uniqueCommandName(&$nameIndex, $command, $name, $uid)
     {
-        $name = trim((string) $name);
+        $identity = self::commandIdentity($command);
         $previousName = (string) $command->getName();
-        if ($previousName !== '') {
+        if ($previousName !== '' && ($nameIndex[$previousName] ?? '') === $identity) {
             unset($nameIndex[$previousName]);
         }
+
+        $name = trim((string) $name);
         $candidate = $name;
         $suffix = 0;
-        do {
-            $collision = isset($nameIndex[$candidate]);
-            if ($collision) {
-                $suffix++;
-                $candidate = $name . ' [' . strtoupper(dechex((int) $uid)) . ($suffix > 1 ? '-' . $suffix : '') . ']';
-            }
-        } while ($collision);
-        $nameIndex[$candidate] = true;
+        while (isset($nameIndex[$candidate]) && $nameIndex[$candidate] !== $identity) {
+            $suffix++;
+            $candidate = $name . ' [' . strtoupper(dechex((int) $uid)) . ($suffix > 1 ? '-' . $suffix : '') . ']';
+        }
+        $nameIndex[$candidate] = $identity;
         return $candidate;
     }
 
