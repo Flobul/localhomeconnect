@@ -263,6 +263,9 @@ class ApplianceRuntime {
     this.activeProgram = null;
     this.optionContextProgram = null;
     this.availablePrograms = new Map();
+    // Uids dont la valeur courante est un conteneur de transport `{length,list}`
+    // plutôt qu'une valeur exploitable. Ils ne doivent produire aucune commande.
+    this.containerValues = new Set();
     this.schemaTimer = null;
     this.valueTimer = null;
     this.hostUpdatePromise = null;
@@ -495,11 +498,14 @@ class ApplianceRuntime {
           // Un conteneur de liste est la valeur d'un uid de programme, pas une
           // information. Il est déballé pour que chaque option redevienne une
           // info typée au lieu d'une chaîne JSON illisible.
+          this.containerValues.add(uid);
+          if (this.applyProgramPointer(uid, envelope)) programStateChanged = true;
           for (const entry of envelope) {
             for (const optionUid of this.captureProgramOptions(entry)) changedUids.add(optionUid);
           }
           continue;
         }
+        this.containerValues.delete(uid);
         this.values.set(uid, item.value);
         changedUids.add(uid);
         if (this.isOptionOfSelectedProgram(uid)) this.optionContextProgram = this.selectedProgram;
@@ -532,6 +538,49 @@ class ApplianceRuntime {
       return;
     }
     if (changedUids.size > 0 || programStateChanged) this.scheduleValueUpdate(changedUids);
+  }
+
+  /**
+   * Applique le pointeur de programme transporté par une enveloppe de valeur.
+   *
+   * Les appareils qui n'exposent pas `/ro/selectedProgram` ni
+   * `/ro/activeProgram` (404 sur ces ressources) annoncent le programme courant
+   * et ses options directement dans la valeur d'un uid. Sans cette traduction,
+   * les informations « Programme sélectionné » et « Programme actif » restent
+   * vides alors que l'appareil publie pourtant son programme.
+   *
+   * @param {string} uid Uid porteur de l'enveloppe.
+   * @param {unknown[]} entries Entrées déballées.
+   * @returns {boolean} Vrai si un pointeur a changé.
+   */
+  applyProgramPointer(uid, entries) {
+    const pointers = entries
+      .map(entry => Number(entry?.program))
+      .filter(Number.isFinite);
+    if (pointers.length === 0) return false;
+    const pointer = pointers[0];
+    // Le XML nomme les deux racines, ce qui identifie le rôle sans ambiguïté.
+    const feature = this.profile.featuresByUid[normalizeUid(uid)] || "";
+    let target = "";
+    if (/ActiveProgram$/i.test(feature)) target = "active";
+    else if (/SelectedProgram$/i.test(feature)) target = "selected";
+    if (target === "active") {
+      if (this.activeProgram === pointer) return false;
+      this.activeProgram = pointer;
+      return true;
+    }
+    if (target === "selected") {
+      if (this.selectedProgram === pointer) return false;
+      if (this.selectedProgram !== null) this.optionContextProgram = null;
+      this.selectedProgram = pointer;
+      return true;
+    }
+    // Racine nommée autrement : l'appareil ne publie qu'un pointeur, il s'agit
+    // du programme choisi.
+    if (this.selectedProgram === pointer) return false;
+    if (this.selectedProgram !== null) this.optionContextProgram = null;
+    this.selectedProgram = pointer;
+    return true;
   }
 
   captureProgramOptions(item) {
@@ -629,6 +678,9 @@ class ApplianceRuntime {
       const feature = this.profile.featuresByUid[uid] || "";
       if (this.isKnownProgramOption(uid) && !this.isOptionOfSelectedProgram(uid)) continue;
       if (this.values.has(uid) || !this.isWritable(uid)) continue;
+      // Un uid dont la valeur est un conteneur n'a pas de valeur exploitable :
+      // l'annoncer recréerait une information figée sur du JSON brut.
+      if (this.containerValues.has(uid)) continue;
       // Le XML installé décrit les capacités stables de l'appareil. Une
       // propriété READWRITE doit rester annoncée même si sa valeur n'est pas
       // incluse dans l'instantané courant (porte, programme ou mode différent).
@@ -651,11 +703,13 @@ class ApplianceRuntime {
       event: "schema",
       ...this.runtimeStatusPayload(),
       complete: true,
-      knownUids: Object.keys(this.profile.featuresByUid),
+      knownUids: Object.keys(this.profile.featuresByUid)
+        .filter(uid => !this.containerValues.has(uid)),
       writableUids: Object.keys(this.profile.featuresByUid).filter(uid =>
-        writableAccess(this.profile.descriptionsByUid[uid]?.access)
-        || this.profile.writableProgramOptionUids.has(uid)
-        || this.isWritable(Number.parseInt(uid, 16))
+        !this.containerValues.has(uid)
+        && (writableAccess(this.profile.descriptionsByUid[uid]?.access)
+          || this.profile.writableProgramOptionUids.has(uid)
+          || this.isWritable(Number.parseInt(uid, 16)))
       ),
       info: this.publicInfo(),
       entities,
