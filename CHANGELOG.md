@@ -1,16 +1,20 @@
 # Changelog
 
-## 0.10.3
+## 0.10.4
 
 - Démon à nouveau démarrable lorsque des profils sont importés mais qu'aucun équipement Jeedom ne les référence : `deamon_info()` réconcilie l'écart entre les profils présents sur le disque et les équipements en base, en créant les équipements manquants et en réactivant ceux qui avaient été désactivés. La page Santé pouvait annoncer « N profil(s) » tout en refusant de démarrer avec « Importez au moins un profil Home Connect ».
 - Enveloppe de transport Home Connect `{length, list:[…]}` déballée dans le démon : certains appareils livrent `/ro/selectedProgram`, `/ro/activeProgram` et `/ro/availablePrograms` dans un conteneur de liste. Le pointeur de programme et ses options n'étaient jamais extraits, et le conteneur fuit jusqu'aux commandes d'information sous forme de JSON brut (`{"length":1,"list":[…]}`, sous-type `other`). Chaque option redevient une information typée — numérique avec son unité issue du XML, ou binaire — et le conteneur ne peut plus devenir une information.
 
-## 0.10.2
+## 0.10.3
 
 - Synchronisation des commandes fiabilisée lorsque plusieurs fonctions partagent le même libellé : le nom n'est conservé que si son propriétaire est exactement la même commande Jeedom, sinon un suffixe UID est ajouté avant l'enregistrement afin d'éviter l'erreur MySQL `Duplicate entry`.
 - Sélection déterministe de la commande d'information canonique par UID afin qu'elle ne soit plus restaurée puis déclarée obsolète à chaque synchronisation selon l'ordre de retour de la base.
 
-## 0.1.1
+## 0.10.2
+
+Correction du blocage du démon "Importez au moins un profil" : lorsque des profils Home Connect sont importés (ZIP ou cloud) mais qu'aucun équipement Jeedom correspondant n'existe en base (import échoué silencieusement, équipements supprimés ou désactivés), le démon s'auto-répare désormais au lieu de refuser de démarrer.
+
+## 0.10.1
 
 - Collision de noms de commandes corrigée sur les fours exposant des états par cavité, notamment le Siemens HR776G3B1 : suffixes « Cavité 1 » et « Cavité 1 (serveur) » pour distinguer les programmes, éclairages et événements et permettre la création des commandes de programme globales.
 
