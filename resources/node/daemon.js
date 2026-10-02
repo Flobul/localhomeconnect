@@ -508,6 +508,7 @@ class ApplianceRuntime {
         this.containerValues.delete(uid);
         this.values.set(uid, item.value);
         changedUids.add(uid);
+        if (this.applyProgramRootValue(uid, item.value)) programStateChanged = true;
         if (this.isOptionOfSelectedProgram(uid)) this.optionContextProgram = this.selectedProgram;
       }
     }
@@ -541,42 +542,66 @@ class ApplianceRuntime {
   }
 
   /**
+   * Renseigne le pointeur de programme depuis la valeur d'un uid racine.
+   *
+   * Source de référence des implémentations hcpy, homeconnect_local_hass et
+   * go-homeconnect2mqtt : le programme courant est une valeur ordinaire du flux
+   * `/ro/allMandatoryValues`, résolue par le nom de la fonction XML. Les
+   * ressources `/ro/selectedProgram` et `/ro/activeProgram` ne sont qu'un moyen
+   * supplémentaire de l'obtenir, absent sur les appareils qui les refusent en
+   * 404 (machines à café notamment). Lire l'UID garantit donc le programme sur
+   * toutes les familles d'appareils.
+   *
+   * @param {string} uid Uid porteur de la valeur.
+   * @param {unknown} value Valeur brute.
+   * @returns {boolean} Vrai si un pointeur a changé.
+   */
+  applyProgramRootValue(uid, value) {
+    const pointer = Number(value);
+    if (!Number.isFinite(pointer)) return false;
+    return this.assignProgramPointer(this.profile.featuresByUid[normalizeUid(uid)] || "", pointer);
+  }
+
+  /**
    * Applique le pointeur de programme transporté par une enveloppe de valeur.
    *
-   * Les appareils qui n'exposent pas `/ro/selectedProgram` ni
-   * `/ro/activeProgram` (404 sur ces ressources) annoncent le programme courant
-   * et ses options directement dans la valeur d'un uid. Sans cette traduction,
-   * les informations « Programme sélectionné » et « Programme actif » restent
-   * vides alors que l'appareil publie pourtant son programme.
+   * Les appareils qui n'exposent ni `/ro/selectedProgram` ni
+   * `/ro/activeProgram` publient parfois le programme et ses options dans une
+   * enveloppe `{length, list:[…]}`. Sans cette lecture, les informations
+   * « Programme sélectionné » et « Programme actif » resteraient vides.
    *
    * @param {string} uid Uid porteur de l'enveloppe.
    * @param {unknown[]} entries Entrées déballées.
    * @returns {boolean} Vrai si un pointeur a changé.
    */
   applyProgramPointer(uid, entries) {
-    const pointers = entries
-      .map(entry => Number(entry?.program))
-      .filter(Number.isFinite);
-    if (pointers.length === 0) return false;
-    const pointer = pointers[0];
-    // Le XML nomme les deux racines, ce qui identifie le rôle sans ambiguïté.
+    const pointer = entries.map(entry => Number(entry?.program)).find(Number.isFinite);
+    if (pointer === undefined) return false;
     const feature = this.profile.featuresByUid[normalizeUid(uid)] || "";
-    let target = "";
-    if (/ActiveProgram$/i.test(feature)) target = "active";
-    else if (/SelectedProgram$/i.test(feature)) target = "selected";
-    if (target === "active") {
+    logger("debug", `${this.haId}: programme ${pointer} publié par ${feature || uid}`);
+    // Un conteneur annonce un programme sans ambiguïté. Quand le XML ne nomme
+    // aucune des deux racines, l'appareil ne publie que ce programme-ci.
+    return this.assignProgramPointer(feature, pointer, true);
+  }
+
+  /**
+   * Affecte un pointeur de programme au rôle désigné par le nom de la fonction.
+   *
+   * @param {string} feature Nom complet de la fonction XML.
+   * @param {number} pointer Numéro de programme.
+   * @param {boolean} fallbackToSelected Applique le pointeur au programme
+   *   sélectionné quand le XML ne nomme aucune des deux racines.
+   * @returns {boolean} Vrai si un pointeur a changé.
+   */
+  assignProgramPointer(feature, pointer, fallbackToSelected = false) {
+    const isActive = /ActiveProgram$/i.test(feature);
+    const isSelected = /SelectedProgram$/i.test(feature);
+    if (!isActive && !isSelected && !fallbackToSelected) return false;
+    if (isActive) {
       if (this.activeProgram === pointer) return false;
       this.activeProgram = pointer;
       return true;
     }
-    if (target === "selected") {
-      if (this.selectedProgram === pointer) return false;
-      if (this.selectedProgram !== null) this.optionContextProgram = null;
-      this.selectedProgram = pointer;
-      return true;
-    }
-    // Racine nommée autrement : l'appareil ne publie qu'un pointeur, il s'agit
-    // du programme choisi.
     if (this.selectedProgram === pointer) return false;
     if (this.selectedProgram !== null) this.optionContextProgram = null;
     this.selectedProgram = pointer;
