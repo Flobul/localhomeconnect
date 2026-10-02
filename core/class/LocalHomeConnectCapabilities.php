@@ -870,7 +870,9 @@ class LocalHomeConnectCapabilities
                 )
             ) ,
             'ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.FlatWhite' => array(
-                'name' => __("Blanc pur", __FILE__) ,
+                // « Flat White » est un nom de boisson, pas un mot français :
+                // « Blanc pur » était une traduction littérale sans sens ici.
+                'name' => __("Flat White", __FILE__) ,
                 'action' => 'Program',
                 'available' => array(
                     'CoffeeMaker'

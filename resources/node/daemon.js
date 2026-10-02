@@ -266,6 +266,8 @@ class ApplianceRuntime {
     // Uids dont la valeur courante est un conteneur de transport `{length,list}`
     // plutôt qu'une valeur exploitable. Ils ne doivent produire aucune commande.
     this.containerValues = new Set();
+    // Bornes les plus larges annoncées par l'appareil pour chaque uid.
+    this.widestBounds = new Map();
     this.schemaTimer = null;
     this.valueTimer = null;
     this.hostUpdatePromise = null;
@@ -692,7 +694,7 @@ class ApplianceRuntime {
     const entities = [];
     for (const [uid, rawValue] of this.values.entries()) {
       if (this.isKnownProgramOption(uid) && !this.isOptionOfSelectedProgram(uid)) continue;
-      const description = this.descriptionForUid(uid);
+      const description = this.displayDescriptionForUid(uid);
       const entity = entityFor(uid, rawValue, description, this.profile);
       if (!entity) continue;
       entity.writable = this.isWritable(entity.uidNumber) && !entity.dangerous;
@@ -713,7 +715,7 @@ class ApplianceRuntime {
       if (["BSH.Common.Root.SelectedProgram", "BSH.Common.Root.ActiveProgram"].includes(feature)) continue;
       const isCommand = feature.includes(".Command.");
       const commandValue = description.default ?? description.initValue ?? null;
-      const entity = entityFor(uid, commandValue, description, this.profile);
+      const entity = entityFor(uid, commandValue, this.displayDescriptionForUid(uid), this.profile);
       if (!entity || entity.dangerous) continue;
       entity.writable = true;
       entity.requiresOptIn = !entity.safeWritable;
@@ -781,6 +783,7 @@ class ApplianceRuntime {
   descriptionForUid(uid) {
     const normalized = normalizeUid(uid);
     const description = { ...(this.description.get(normalized) || {}) };
+    this.recordWidestBounds(normalized, description);
     const programUid = normalizeUid(Number(this.selectedProgram));
     if (!programUid) return description;
     const option = (this.profile.programOptionsByUid[programUid] || [])
@@ -788,6 +791,49 @@ class ApplianceRuntime {
     if (!option) return description;
     for (const key of ["access", "available", "default", "min", "max", "step"]) {
       if (option[key] !== undefined) description[key] = option[key];
+    }
+    this.recordWidestBounds(normalized, description);
+    return description;
+  }
+
+  /**
+   * Mémorise la borne la plus large jamais annoncée pour un uid.
+   *
+   * Une machine à café annonce une contenance maximale différente selon la
+   * boisson : 35 ml pour un espresso, 200 ml ou plus pour un café allongé ou de
+   * l'eau chaude. Ne conserver que la borne courante figerait le curseur sur la
+   * plus petite et rendrait les autres boissons inatteignables depuis Jeedom.
+   */
+  recordWidestBounds(uid, description) {
+    if (!uid) return;
+    const minimum = Number(description.min);
+    const maximum = Number(description.max);
+    if (!Number.isFinite(minimum) && !Number.isFinite(maximum)) return;
+    const bounds = this.widestBounds.get(uid) || {};
+    if (Number.isFinite(minimum)) bounds.min = Math.min(bounds.min ?? minimum, minimum);
+    if (Number.isFinite(maximum)) bounds.max = Math.max(bounds.max ?? maximum, maximum);
+    this.widestBounds.set(uid, bounds);
+  }
+
+  /**
+   * Définition destinée au curseur Jeedom, aux bornes les plus larges vues.
+   *
+   * La validation d'écriture conserve la borne du programme sélectionné : le
+   * curseur doit seulement autoriser une valeur que l'appareil a déjà acceptée
+   * pour une autre boisson.
+   */
+  displayDescriptionForUid(uid) {
+    const normalized = normalizeUid(uid);
+    const description = this.descriptionForUid(normalized);
+    const bounds = this.widestBounds.get(normalized);
+    if (!bounds) return description;
+    if (bounds.min !== undefined
+      && (description.min === undefined || bounds.min < Number(description.min))) {
+      description.min = bounds.min;
+    }
+    if (bounds.max !== undefined
+      && (description.max === undefined || bounds.max > Number(description.max))) {
+      description.max = bounds.max;
     }
     return description;
   }

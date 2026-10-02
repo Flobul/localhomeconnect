@@ -7,6 +7,8 @@
 - Programme courant restitué sur les appareils qui n'exposent pas `/ro/selectedProgram` ni `/ro/activeProgram` (code 404 sur ces ressources, machines à café notamment) : le pointeur est désormais lu dans le flux de valeurs `/ro/allMandatoryValues`, résolu par le nom de la fonction XML — la méthode retenue par hcpy, homeconnect_local_hass et go-homeconnect2mqtt. Les ressources dédiées ne sont plus qu'une source supplémentaire. Une valeur scalaire sur un uid ordinaire n'est jamais interprétée comme un programme.
 - Enveloppe `{length, list:[…]}` également déballée pour extraire le programme : les appareils qui publient le programme courant uniquement dans un conteneur de valeurs sont pris en charge, le nom de la fonction portant le programme étant journalisé en debug.
 - Uid porteur d'un conteneur retiré des UID annoncés : la commande correspondante était alimentée une fois par un JSON brut puis figée, la valeur erronée restant affichée indéfiniment. Elle est désormais déclarée obsolète et masquée à la synchronisation.
+- Curseurs élargis à la plus large borne annoncée par l'appareil : une machine à café limite la contenance selon la boisson, 35 ml pour un espresso contre 200 ml ou plus pour un café allongé ou de l'eau chaude. Le curseur « Contenance » conservait la borne courante et bloquait les autres boissons ; il monte désormais à la borne la plus large déjà annoncée, la validation d'écriture restant alignée sur le programme sélectionné.
+- « Flat White » n'est plus traduit par « Blanc pur », traduction littérale sans sens pour ce nom de boisson.
 
 ## 0.10.3
 
