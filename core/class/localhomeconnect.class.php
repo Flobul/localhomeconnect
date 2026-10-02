@@ -19,7 +19,7 @@ require_once __DIR__ . '/LocalHomeConnectStorage.php';
  */
 class localhomeconnect extends eqLogic
 {
-    public static $_pluginVersion = '0.10.4';
+    public static $_pluginVersion = '0.10.5';
     public static $_widgetPossibility = array('custom' => true, 'custom::layout' => true);
     public static $_encryptConfigKey = array('homeconnect_password', 'daemon_token');
 
