@@ -849,7 +849,7 @@ class LocalHomeConnectCapabilities
                 )
             ) ,
             'ConsumerProducts.CoffeeMaker.Program.CoffeeWorld.Verlaengerter' => array(
-                'name' => __("Rallongé", __FILE__) ,
+                'name' => __("Verlangerter", __FILE__) ,
                 'action' => 'Program',
                 'available' => array(
                     'CoffeeMaker'
