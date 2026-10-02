@@ -17,6 +17,7 @@ const {
   programsFor,
   humanize,
   valueFor,
+  finiteNumber,
 } = require("./profile");
 
 const HOME_CONNECT_SERVICE = "_homeconnect._tcp.local";
@@ -806,12 +807,12 @@ class ApplianceRuntime {
    */
   recordWidestBounds(uid, description) {
     if (!uid) return;
-    const minimum = Number(description.min);
-    const maximum = Number(description.max);
-    if (!Number.isFinite(minimum) && !Number.isFinite(maximum)) return;
+    const minimum = finiteNumber(description.min);
+    const maximum = finiteNumber(description.max);
+    if (minimum === undefined && maximum === undefined) return;
     const bounds = this.widestBounds.get(uid) || {};
-    if (Number.isFinite(minimum)) bounds.min = Math.min(bounds.min ?? minimum, minimum);
-    if (Number.isFinite(maximum)) bounds.max = Math.max(bounds.max ?? maximum, maximum);
+    if (minimum !== undefined) bounds.min = Math.min(bounds.min ?? minimum, minimum);
+    if (maximum !== undefined) bounds.max = Math.max(bounds.max ?? maximum, maximum);
     this.widestBounds.set(uid, bounds);
   }
 

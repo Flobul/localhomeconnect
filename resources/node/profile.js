@@ -208,16 +208,39 @@ function humanize(value) {
     .trim();
 }
 
+/**
+ * Convertit une valeur en nombre borné, ou undefined si elle n'en est pas un.
+ *
+ * `Number()` transforme `null` et la chaîne vide en 0. Les annonces
+ * `/ro/descriptionChange` renseignent `min` et `max` avec `null` pour toute
+ * propriété non numérique : les lire ainsi imposait une borne 0 et classait la
+ * propriété en nombre, faisant échouer l'écriture d'un texte avec « attend un
+ * nombre ».
+ */
+function finiteNumber(value) {
+  if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+  if (typeof value === "string") {
+    const text = value.trim();
+    if (text === "") return undefined;
+    const parsed = Number(text);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  }
+  return undefined;
+}
+
 function metadataFor(featureName, uid, profile, description = {}) {
   const metadata = {};
   for (const key of ["min", "minimum", "minValue"]) {
-    if (Number.isFinite(Number(description[key]))) { metadata.min = Number(description[key]); break; }
+    const parsed = finiteNumber(description[key]);
+    if (parsed !== undefined) { metadata.min = parsed; break; }
   }
   for (const key of ["max", "maximum", "maxValue"]) {
-    if (Number.isFinite(Number(description[key]))) { metadata.max = Number(description[key]); break; }
+    const parsed = finiteNumber(description[key]);
+    if (parsed !== undefined) { metadata.max = parsed; break; }
   }
   for (const key of ["step", "stepSize", "increment"]) {
-    if (Number.isFinite(Number(description[key]))) { metadata.step = Number(description[key]); break; }
+    const parsed = finiteNumber(description[key]);
+    if (parsed !== undefined) { metadata.step = parsed; break; }
   }
   metadata.unit = description.unit || description.unitOfMeasure || undefined;
   const declaredType = String(description.dataType || description.type || "").trim().toLowerCase();
@@ -352,6 +375,7 @@ module.exports = {
   markerPart,
   categoryFor,
   humanize,
+  finiteNumber,
   metadataFor,
   protocolTypeFor,
   valueFor,
