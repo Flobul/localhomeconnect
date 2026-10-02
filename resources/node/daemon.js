@@ -78,6 +78,29 @@ function logger(level, message) {
   process.stdout.write(`${formatLogLine(normalized, message)}\n`);
 }
 
+/**
+ * Déballe l'enveloppe de transport Home Connect `{length, list:[…]}`.
+ *
+ * Certains appareils répondent à `/ro/selectedProgram`, `/ro/activeProgram` et
+ * `/ro/availablePrograms` avec un unique conteneur de liste au lieu d'un
+ * tableau plat. Conserver l'enveloppe masquait le pointeur de programme et
+ * toutes ses options derrière une valeur JSON illisible.
+ *
+ * @param {unknown} value Élément candidat.
+ * @returns {unknown[]|null} Entrées enthaltenues, ou null si absent.
+ */
+function unwrapListEnvelope(value) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) return null;
+  const list = value.list;
+  if (!Array.isArray(list) || list.length === 0) return null;
+  // Une entrée de charge utile réelle s'identifie elle-même : sans ces clés,
+  // ce n'est qu'un conteneur de transport.
+  for (const key of ["uid", "refUID", "refUid", "program", "options", "value"]) {
+    if (Object.prototype.hasOwnProperty.call(value, key)) return null;
+  }
+  return list;
+}
+
 function parseArguments() {
   const option = process.argv.find(value => value.startsWith("--config="));
   if (!option) throw new Error("Le chemin --config est obligatoire");
@@ -446,7 +469,7 @@ class ApplianceRuntime {
   handleMessage(message) {
     this.lastSeen = timestamp();
     this.lastFrameAt = Date.now();
-    const data = Array.isArray(message.data) ? message.data : [];
+    const data = (Array.isArray(message.data) ? message.data : []).flatMap(item => unwrapListEnvelope(item) || [item]);
     const changedUids = new Set();
     let schemaChanged = false;
     let programStateChanged = false;
@@ -466,11 +489,20 @@ class ApplianceRuntime {
     if (String(message.resource || "").startsWith("/ro/")) {
       for (const item of data) {
         const uid = normalizeUid(item?.uid);
-        if (uid && Object.prototype.hasOwnProperty.call(item, "value")) {
-          this.values.set(uid, item.value);
-          changedUids.add(uid);
-          if (this.isOptionOfSelectedProgram(uid)) this.optionContextProgram = this.selectedProgram;
+        if (!uid || !Object.prototype.hasOwnProperty.call(item, "value")) continue;
+        const envelope = unwrapListEnvelope(item.value);
+        if (envelope) {
+          // Un conteneur de liste est la valeur d'un uid de programme, pas une
+          // information. Il est déballé pour que chaque option redevienne une
+          // info typée au lieu d'une chaîne JSON illisible.
+          for (const entry of envelope) {
+            for (const optionUid of this.captureProgramOptions(entry)) changedUids.add(optionUid);
+          }
+          continue;
         }
+        this.values.set(uid, item.value);
+        changedUids.add(uid);
+        if (this.isOptionOfSelectedProgram(uid)) this.optionContextProgram = this.selectedProgram;
       }
     }
     if (message.resource === "/ro/selectedProgram" && data[0]?.program !== undefined) {

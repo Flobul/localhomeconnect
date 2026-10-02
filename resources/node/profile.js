@@ -311,6 +311,10 @@ function isKnownSafeWritableFeature(featureName) {
 function entityFor(uidValue, rawValue, description, profile) {
   const uid = normalizeUid(uidValue);
   if (!uid) return null;
+  // Les valeurs Home Connect sont scalaires. Un objet est un conteneur de
+  // transport (liste de programmes) : l'exposer produirait une info dont la
+  // valeur est du JSON brut, sans sous-type exploitable.
+  if (rawValue !== null && typeof rawValue === "object") return null;
   const feature = profile.featuresByUid[uid] || `HomeConnect.Unknown.uid_${uid}`;
   const metadata = metadataFor(feature, uid, profile, description);
   metadata.protocolType = protocolTypeFor(rawValue, metadata, description);
