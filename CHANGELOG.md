@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.6
+
+- Les noms personnalisés des commandes Jeedom sont désormais conservés lors des synchronisations : le nom calculé par le plugin n'est appliqué qu'à la création. Les commandes d'information, les actions d'écriture, les favoris et les commandes de programme gardent ainsi leur nom manuel et leur identifiant Jeedom.
+- Les libellés personnalisés des listes déroulantes, notamment « Choisir le programme », ne sont plus remplacés par les traductions du plugin. La synchronisation fusionne les choix par valeur brute, conserve les libellés et les valeurs déjà enregistrés, puis ajoute seulement les nouvelles valeurs annoncées par l'appareil.
+- Libellés officiels des boissons des machines à café repris par identifiant de programme, pour les deux familles « Beverages Classic » et « Beverages Coffee World » : une machine configurée en allemand annonçait « Flat White » et « Verlängerter », traduits à tort en « Blanc pur » et « Rallongé ». Les identifiants de programme étant universels, ces libellés sont désormais ceux de la liste officielle, quelle que soit la langue de l'appareil.
+- Version du paquet du démon réalignée sur la version du plugin ; le manifeste Node était resté en `0.10.2` alors que le plugin et son verrou de dépendances étaient en `0.10.5`.
+- Valeurs par défaut confiées à `core/config/localhomeconnect.config.ini` : `localhomeconnect_install()` n'écrit plus les huit `config::save()` qui dupliquaient ce fichier, et `localhomeconnect_update()` ne réécrit plus le port, les trois intervalles ni `app_name` et `callback_verify_tls` à chaque mise à jour. Seules restent les opérations qui ne peuvent pas être exprimées par ce fichier : la protection du stockage privé, le réenregistrement des secrets pour `$_encryptConfigKey`, la suppression des clés devenues obsolètes et le rechargement du démon.
+
 ## 0.10.4
 
 - Démon à nouveau démarrable lorsque des profils sont importés mais qu'aucun équipement Jeedom ne les référence : `deamon_info()` réconcilie l'écart entre les profils présents sur le disque et les équipements en base, en créant les équipements manquants et en réactivant ceux qui avaient été désactivés. La page Santé pouvait annoncer « N profil(s) » tout en refusant de démarrer avec « Importez au moins un profil Home Connect ».

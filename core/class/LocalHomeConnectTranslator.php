@@ -138,6 +138,62 @@ final class LocalHomeConnectTranslator
     }
 
     /**
+     * Libellé officiel d'un programme de boisson Home Connect.
+     *
+     * Les machines à café annoncent leurs boissons avec des noms traduits dans
+     * la langue de l'appareil. Les identifiants de programme étant universels,
+     * leur libellé exact est retrouvé sans traduction hasardeuse.
+     *
+     * @param int $uid Identifiant de programme.
+     * @return string|null Libellé, ou null si le programme n'est pas une boisson.
+     */
+    public static function beverage($uid)
+    {
+        $uid = (int) $uid;
+        $labels = array(
+            // Beverages Classic
+            8209 => 'Espresso',
+            8219 => 'Espresso doppio',
+            8211 => 'Café',
+            8225 => 'Caffè grande',
+            8224 => 'Café XL',
+            8212 => 'Cappuccino',
+            8213 => 'Latte macchiato',
+            8214 => 'Café latte',
+            8215 => 'Mousse de lait',
+            8216 => 'Lait chaud',
+            8217 => 'Eau chaude',
+            8218 => 'Cafetière (pot)',
+            // Beverages Coffee World
+            8208 => 'Ristretto',
+            8210 => 'Espresso macchiato',
+            20496 => 'Kleiner Brauner',
+            20497 => 'Grosser Brauner',
+            20498 => 'Verlängerter',
+            20499 => 'Verlängerter Brauner',
+            20500 => 'Wiener Melange',
+            20501 => 'Flat White',
+            20502 => 'Cortado',
+            20503 => 'Café Cortado',
+            20504 => 'Café con leche',
+            20505 => 'Café au lait',
+            20506 => 'Doppio',
+            20507 => 'Kaapi',
+            20508 => 'Koffie verkeerd',
+            20509 => 'Galão',
+            20510 => 'Garoto',
+            20511 => 'Americano',
+            20512 => 'Red Eye',
+            20513 => 'Black Eye',
+            20514 => 'Dead Eye',
+            20515 => 'Cold Brew',
+            20516 => 'Cold Brew macchiato',
+            20517 => 'Slow Brew',
+        );
+        return isset($labels[$uid]) ? $labels[$uid] : null;
+    }
+
+    /**
      * Retourne le type, l'unité et les bornes connues pour une fonction.
      *
      * Les informations du profil de l'appareil restent prioritaires. Ces

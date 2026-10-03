@@ -1,56 +1,31 @@
 <?php
 
 /**
- * Retourne une valeur de port de démon sûre.
- *
- * @param mixed $value Valeur enregistrée.
- * @return int
- */
-function localhomeconnect_normalize_port($value)
-{
-    $port = (int) $value;
-    return $port >= 1024 && $port <= 65535 ? $port : 55043;
-}
-
-/**
  * Initialise la configuration du plugin.
+ *
+ * Les valeurs par défaut sont déclarées dans
+ * `core/config/localhomeconnect.config.ini` : Jeedom les applique à
+ * l'installation sans qu'elles soient réécrites ici. Seules les opérations
+ * qui ne peuvent pas être exprimées par ce fichier reviennent ici.
  *
  * @return void
  */
 function localhomeconnect_install()
 {
     localhomeconnect::securePrivateStorage();
-    config::save('daemon_port', 55043, 'localhomeconnect');
-    config::save('discovery_timeout', 8, 'localhomeconnect');
-    config::save('reconnect_interval', 30, 'localhomeconnect');
-    config::save('watchdog_interval', 600, 'localhomeconnect');
-    config::save('app_name', 'Jeedom LocalHomeConnect', 'localhomeconnect');
-    config::save('callback_verify_tls', 1, 'localhomeconnect');
-    config::save('homeconnect_username', '', 'localhomeconnect');
-    config::save('homeconnect_password', '', 'localhomeconnect');
 }
 
 /**
- * Normalise la configuration lors d'une mise à jour.
+ * Effectue les migrations de configuration lors d'une mise à jour.
+ *
+ * Aucune valeur par défaut n'est réécrite : le fichier de configuration du
+ * plugin reste la référence et les choix de l'utilisateur sont préservés.
  *
  * @return void
  */
 function localhomeconnect_update()
 {
     localhomeconnect::securePrivateStorage();
-    config::save(
-        'daemon_port',
-        localhomeconnect_normalize_port(config::byKey('daemon_port', 'localhomeconnect', 55043)),
-        'localhomeconnect'
-    );
-    foreach (array('discovery_timeout' => 8, 'reconnect_interval' => 30, 'watchdog_interval' => 600) as $key => $default) {
-        $value = (int) config::byKey($key, 'localhomeconnect', $default);
-        config::save($key, $value > 0 ? $value : $default, 'localhomeconnect');
-    }
-    if (trim((string) config::byKey('app_name', 'localhomeconnect', '')) === '') {
-        config::save('app_name', 'Jeedom LocalHomeConnect', 'localhomeconnect');
-    }
-    config::save('callback_verify_tls', (int) config::byKey('callback_verify_tls', 'localhomeconnect', 1) === 1 ? 1 : 0, 'localhomeconnect');
     // Réenregistre les secrets existants afin que les installations venant
     // d'une version antérieure bénéficient aussi de $_encryptConfigKey.
     foreach (array('homeconnect_password', 'daemon_token') as $secretKey) {

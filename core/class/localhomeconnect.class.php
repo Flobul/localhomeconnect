@@ -19,7 +19,7 @@ require_once __DIR__ . '/LocalHomeConnectStorage.php';
  */
 class localhomeconnect extends eqLogic
 {
-    public static $_pluginVersion = '0.10.5';
+    public static $_pluginVersion = '0.10.6';
     public static $_widgetPossibility = array('custom' => true, 'custom::layout' => true);
     public static $_encryptConfigKey = array('homeconnect_password', 'daemon_token');
 
@@ -1475,7 +1475,9 @@ class localhomeconnect extends eqLogic
                 $translatedStates[$rawState] = LocalHomeConnectTranslator::value($feature, $stateLabel);
             }
             if (!$manualOverride) {
-                $info->setName(self::uniqueCommandName($nameIndex, $info, $translatedName, $uidNumber));
+                if ($isNewCommand) {
+                    $info->setName(self::uniqueCommandName($nameIndex, $info, $translatedName, $uidNumber));
+                }
                 $info->setSubType($subType);
                 $technicalHobGeometry = preg_match(
                     '/Cooking\.Hob\.Status(?:\.Zone\.\d+)?\.(?:Position|LengthX|LengthY|Shape|ZoneSelector)$/i',
@@ -1597,7 +1599,8 @@ class localhomeconnect extends eqLogic
             if ((int) $command->getConfiguration('generated', 0) !== 1 || !isset($labels[$feature])) {
                 continue;
             }
-            $command->setName($labels[$feature])->setIsVisible(0)->setUnite('');
+            self::applyGeneratedName($command, $labels[$feature]);
+            $command->setIsVisible(0)->setUnite('');
             self::saveCommandIfChanged($command);
         }
     }
@@ -1642,6 +1645,71 @@ class localhomeconnect extends eqLogic
         if ((int) $command->getId() <= 0 || $command->getChanged()) {
             $command->save();
         }
+    }
+
+    /**
+     * Attribue le nom calculé uniquement lors de la création d'une commande.
+     *
+     * Le nom visible appartient à l'utilisateur dès que Jeedom a enregistré la
+     * commande : une synchronisation ultérieure ne doit jamais le remplacer,
+     * sous peine d'annuler silencieusement tous ses renommages.
+     *
+     * @param object $command Commande Jeedom.
+     * @param string $generatedName Nom proposé par le plugin.
+     * @return object
+     */
+    private static function applyGeneratedName($command, $generatedName)
+    {
+        if ((int) $command->getId() <= 0) {
+            $command->setName((string) $generatedName);
+        }
+        return $command;
+    }
+
+    /**
+     * Fusionne une liste Jeedom `valeur|libellé` sans écraser l'existant.
+     *
+     * Les libellés déjà enregistrés appartiennent à l'utilisateur. Les valeurs
+     * temporairement absentes du profil sont conservées, et les nouvelles
+     * valeurs annoncées par l'appareil sont ajoutées à la fin.
+     *
+     * @param string $existing Liste actuellement enregistrée dans Jeedom.
+     * @param string $generated Liste calculée depuis le profil Home Connect.
+     * @return string
+     */
+    private static function mergeCommandListValue($existing, $generated)
+    {
+        $entries = array();
+        foreach (array($existing, $generated) as $listValue) {
+            foreach (explode(';', (string) $listValue) as $entry) {
+                if ($entry === '') {
+                    continue;
+                }
+                $parts = explode('|', $entry, 2);
+                $raw = trim((string) $parts[0]);
+                if ($raw === '' || array_key_exists($raw, $entries)) {
+                    continue;
+                }
+                $entries[$raw] = isset($parts[1]) ? (string) $parts[1] : $raw;
+            }
+        }
+        $serialized = array();
+        foreach ($entries as $raw => $label) {
+            $serialized[] = self::sanitizeCommandListPart($raw)
+                . '|' . self::sanitizeCommandListPart($label);
+        }
+        return implode(';', $serialized);
+    }
+
+    /**
+     * Neutralise les séparateurs interdits dans une liste `valeur|libellé`.
+     *
+     * @param string $value Partie de l'entrée.
+     * @return string
+     */
+    private static function sanitizeCommandListPart($value)
+    {
+        return str_replace(array('|', ';'), '-', (string) $value);
     }
 
     /**
@@ -1744,7 +1812,10 @@ class localhomeconnect extends eqLogic
             $label = LocalHomeConnectTranslator::actionLabel($feature, LocalHomeConnectTranslator::feature($feature), 'select');
             $action = self::saveAction($eqLogic, $logicalId, $label, 'select', $uid, null, $info, $nameIndex, $protocolType, $requiresOptIn);
             if ((int) $action->getConfiguration('manual_override', 0) !== 1) {
-                $action->setConfiguration('listValue', implode(';', $list));
+                $action->setConfiguration('listValue', self::mergeCommandListValue(
+                    (string) $action->getConfiguration('listValue', ''),
+                    implode(';', $list)
+                ));
                 self::saveCommandIfChanged($action);
             }
             return array($logicalId);
@@ -1788,7 +1859,8 @@ class localhomeconnect extends eqLogic
     private static function saveAction($eqLogic, $logicalId, $name, $subType, $uid, $fixedValue, $info, &$nameIndex, $protocolType, $requiresOptIn = false)
     {
         $command = $eqLogic->getCmd('action', $logicalId);
-        if (!is_object($command)) {
+        $isNewCommand = !is_object($command);
+        if ($isNewCommand) {
             $command = new localhomeconnectCmd();
             $command->setEqLogic_id($eqLogic->getId());
             $command->setLogicalId($logicalId);
@@ -1803,7 +1875,9 @@ class localhomeconnect extends eqLogic
         }
         $command->setType('action');
         $command->setSubType($subType);
-        $command->setName(self::uniqueCommandName($nameIndex, $command, $name, $uid));
+        if ($isNewCommand) {
+            $command->setName(self::uniqueCommandName($nameIndex, $command, $name, $uid));
+        }
         $command->setIsVisible($requiresOptIn ? 0 : 1);
         $command->setConfiguration('operation', 'write');
         $command->setConfiguration('uid', $uid);
@@ -1940,19 +2014,26 @@ class localhomeconnect extends eqLogic
                 continue;
             }
             $uid = (int) $program['uid'];
-            $label = LocalHomeConnectTranslator::program((string) ($program['feature'] ?? $program['name'] ?? $uid));
+            // Les identifiants de boisson Home Connect sont universels : leur
+            // libellé est plus fiable que le nom traduit par l'appareil.
+            $label = LocalHomeConnectTranslator::beverage($uid);
+            if ($label === null) {
+                $label = LocalHomeConnectTranslator::program((string) ($program['feature'] ?? $program['name'] ?? $uid));
+            }
             $choices[] = $uid . '|' . str_replace(array('|', ';'), '-', $label);
             $labels[$uid] = $label;
         }
         foreach (array('selected_program' => __('Programme sélectionné', __FILE__), 'active_program' => __('Programme actif', __FILE__)) as $logicalId => $name) {
             $command = $eqLogic->getCmd('info', $logicalId);
-            if (!is_object($command)) {
+            $isNewCommand = !is_object($command);
+            if ($isNewCommand) {
                 $command = new localhomeconnectCmd();
                 $command->setEqLogic_id($eqLogic->getId());
                 $command->setLogicalId($logicalId);
             }
             $visible = $logicalId !== 'selected_program' || !$canSelect;
-            $command->setName($name)->setType('info')->setSubType('string')->setIsVisible($visible ? 1 : 0);
+            self::applyGeneratedName($command, $name);
+            $command->setType('info')->setSubType('string')->setIsVisible($visible ? 1 : 0);
             $command->setConfiguration('category', 'program')->setConfiguration('generated', 1);
             self::saveCommandIfChanged($command);
         }
@@ -1962,8 +2043,8 @@ class localhomeconnect extends eqLogic
             $selectedUid->setEqLogic_id($eqLogic->getId());
             $selectedUid->setLogicalId('selected_program_uid');
         }
-        $selectedUid->setName(__('Identifiant du programme sélectionné', __FILE__))
-            ->setType('info')->setSubType('numeric')->setIsVisible(0);
+        self::applyGeneratedName($selectedUid, __('Identifiant du programme sélectionné', __FILE__));
+        $selectedUid->setType('info')->setSubType('numeric')->setIsVisible(0);
         $selectedUid->setConfiguration('category', 'program')->setConfiguration('generated', 1);
         self::saveCommandIfChanged($selectedUid);
         $eqLogic->checkAndUpdateCmd('selected_program', isset($labels[(int) $selected]) ? $labels[(int) $selected] : '');
@@ -1984,13 +2065,17 @@ class localhomeconnect extends eqLogic
             $select = new localhomeconnectCmd();
             $select->setEqLogic_id($eqLogic->getId())->setLogicalId('select_program');
         }
-        $select->setName(__('Choisir le programme', __FILE__))->setType('action')->setSubType('select')->setIsVisible($canSelect ? 1 : 0);
+        self::applyGeneratedName($select, __('Choisir le programme', __FILE__));
+        $select->setType('action')->setSubType('select')->setIsVisible($canSelect ? 1 : 0);
         $select->setConfiguration('operation', 'select_program')->setConfiguration('generated', 1);
         $selectedInfo = $eqLogic->getCmd('info', 'selected_program_uid');
         if (is_object($selectedInfo)) {
             $select->setValue($selectedInfo->getId());
         }
-        $select->setConfiguration('listValue', implode(';', $choices));
+        $select->setConfiguration('listValue', self::mergeCommandListValue(
+            (string) $select->getConfiguration('listValue', ''),
+            implode(';', $choices)
+        ));
         self::saveCommandIfChanged($select);
 
         $start = $eqLogic->getCmd('action', 'start_program');
@@ -1998,7 +2083,8 @@ class localhomeconnect extends eqLogic
             $start = new localhomeconnectCmd();
             $start->setEqLogic_id($eqLogic->getId())->setLogicalId('start_program');
         }
-        $start->setName(__('Démarrer le programme sélectionné', __FILE__))->setType('action')->setSubType('other')->setIsVisible($canStart ? 1 : 0);
+        self::applyGeneratedName($start, __('Démarrer le programme sélectionné', __FILE__));
+        $start->setType('action')->setSubType('other')->setIsVisible($canStart ? 1 : 0);
         $start->setConfiguration('operation', 'start_program')->setConfiguration('generated', 1);
         self::saveCommandIfChanged($start);
     }
@@ -2017,7 +2103,8 @@ class localhomeconnect extends eqLogic
                 $command = new localhomeconnectCmd();
                 $command->setEqLogic_id($eqLogic->getId())->setLogicalId($logicalId);
             }
-            $command->setName($definition[0])->setType('info')->setSubType($definition[1])->setIsVisible(0);
+            self::applyGeneratedName($command, $definition[0]);
+            $command->setType('info')->setSubType($definition[1])->setIsVisible(0);
             self::saveCommandIfChanged($command);
         }
         foreach (array('refresh' => array(__('Rafraîchir', __FILE__), 'refresh')) as $logicalId => $definition) {
@@ -2026,7 +2113,8 @@ class localhomeconnect extends eqLogic
                 $command = new localhomeconnectCmd();
                 $command->setEqLogic_id($eqLogic->getId())->setLogicalId($logicalId);
             }
-            $command->setName($definition[0])->setType('action')->setSubType('other');
+            self::applyGeneratedName($command, $definition[0]);
+            $command->setType('action')->setSubType('other');
             $command->setIsVisible(1);
             $command->setConfiguration('operation', $definition[1]);
             self::saveCommandIfChanged($command);

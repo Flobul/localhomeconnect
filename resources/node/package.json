@@ -1,6 +1,6 @@
 {
   "name": "jeedom-localhomeconnect-daemon",
-  "version": "0.10.2",
+  "version": "0.10.6",
   "private": true,
   "description": "Local Home Connect WebSocket transport for the Jeedom LocalHomeConnect plugin",
   "license": "AGPL-3.0-or-later",
